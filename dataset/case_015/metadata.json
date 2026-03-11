@@ -1,0 +1,9 @@
+{
+  "case_id": "case_015",
+  "cwe": "CWE-78",
+  "bandit_rule": "B602",
+  "source": "bandit_examples",
+  "vulnerability_type": "subprocess_shell_injection",
+  "vulnerable_function": "subprocess.Popen",
+  "description": "Running git command with user-controlled branch name and shell=True leads to command injection"
+}

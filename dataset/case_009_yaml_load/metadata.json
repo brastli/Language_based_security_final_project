@@ -1,0 +1,9 @@
+{
+  "case_id": "case_009",
+  "cwe": "CWE-20",
+  "bandit_rule": "B506",
+  "source": "bandit_examples",
+  "vulnerability_type": "unsafe_yaml_load",
+  "vulnerable_function": "yaml.load",
+  "description": "Using yaml.load on untrusted input without a safe loader may lead to arbitrary object deserialization"
+}

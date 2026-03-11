@@ -1,0 +1,9 @@
+{
+  "case_id": "case_016",
+  "cwe": "CWE-94",
+  "bandit_rule": "B307",
+  "source": "bandit_examples",
+  "vulnerability_type": "code_injection",
+  "vulnerable_function": "eval",
+  "description": "Evaluating user-supplied expression as code for calculator leads to code execution"
+}

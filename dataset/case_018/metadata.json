@@ -1,0 +1,9 @@
+{
+  "case_id": "case_018",
+  "cwe": "CWE-502",
+  "bandit_rule": "B403",
+  "source": "bandit_examples",
+  "vulnerability_type": "insecure_deserialization",
+  "vulnerable_function": "marshal.loads",
+  "description": "Using marshal.loads on untrusted data allows arbitrary code execution during deserialization"
+}
