@@ -4,52 +4,40 @@ from openai import OpenAI
 from dotenv import load_dotenv
 
 load_dotenv()
-
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-def request_repair(cwe_id, function_code):
-    """
-    将受污染的函数代码发送给 LLM 进行修复，并要求返回修复思路。
-    """
+CWE_SPECIFIC_RULES = {
+    "78": "CRITICAL: Replace `os.system` or `shell=True` with `subprocess.run()`. Arguments MUST be a list.",
+    "89": "CRITICAL: Use parameterized queries. NEVER use string formatting/concatenation for SQL.",
+    "22": "CRITICAL: Use `os.path.abspath` and verify the path starts with the safe base directory.",
+    "94": "CRITICAL: Replace `eval()` with `ast.literal_eval()` or safe mapping dictionaries."
+}
+
+def request_repair(cwe_id, func_code, data_flow_fact="", prev_error=None):
+    rule = CWE_SPECIFIC_RULES.get(str(cwe_id), "Apply general security best practices.")
     
     prompt = f"""
-    You are a Senior Security Engineer. Your task is to fix a security vulnerability (CWE-{cwe_id}) in the provided Python function.
+    You are a Senior Security Engineer. Fix CWE-{cwe_id} in the code below.
     
-    STRICT RULES:
-    1. Fix the vulnerability using security best practices.
-    2. DO NOT change the function name or parameter list.
-    3. DO NOT hallucinate variable names. 
-    4. RETAIN all functional logic.
-    5. You MUST output ONLY a valid JSON object with exactly two keys:
-       - "reasoning": A brief explanation of your repair strategy in English.
-       - "fixed_code": The fixed Python code.
+    [STRICT RULES]
+    1. {rule}
+    2. Maintain function signatures and business logic.
+    3. [DATA-FLOW CONTEXT]: {data_flow_fact}
     
-    Original Function Code:
-    {function_code}
+    [ORIGINAL CODE]
+    {func_code}
     """
+    
+    if prev_error:
+        prompt += f"\n\n[PREVIOUS ATTEMPT FAILED]\nError Log: {prev_error}\nAnalyze the regression and provide a better fix."
 
-    try:
-        print(f"--- requesting LLM to repair CWE-{cwe_id} ---")
-        
-        response = client.chat.completions.create(
-            model="gpt-4o",
-            messages=[
-                {"role": "system", "content": "You are a precise code repair assistant. Always output valid JSON."},
-                {"role": "user", "content": prompt}
-            ],
-            response_format={ "type": "json_object" }, # 强制 JSON 输出
-            temperature=0.1  
-        )
-        
-        raw_content = response.choices[0].message.content.strip()
-        
-        # 解析 JSON
-        data = json.loads(raw_content)
-        reasoning = data.get("reasoning", "LLM didn't provide reasoning")
-        fixed_code = data.get("fixed_code", function_code)
-            
-        return reasoning, fixed_code
+    prompt += '\nOutput ONLY a JSON object: {"reasoning": "...", "fixed_code": "..."}'
 
-    except Exception as e:
-        print(f"LLM 请求或解析失败: {e}")
-        return "修复请求失败", function_code
+    response = client.chat.completions.create(
+        model="gpt-4o",
+        messages=[{"role": "user", "content": prompt}],
+        response_format={"type": "json_object"},
+        temperature=0.2
+    )
+    data = json.loads(response.choices[0].message.content)
+    return data.get("reasoning", ""), data.get("fixed_code", func_code)

@@ -1,0 +1,6 @@
+{
+  "project_id": "001",
+  "cwe_id": "89",
+  "vulnerability_type": "SQL Injection",
+  "description": "User input from API is concatenated directly into SQL query in db module."
+}
