@@ -1,6 +1,13 @@
-# Functional test for the vulnerable code
+from vulnerable import run
+import os
+import pytest
 
-from vulnerable import example
+def test_run_echo():
+    # Test the run function with a simple echo command
+    result = run("echo hello")
+    assert result == 0  # os.system returns 0 on success
 
-def test_basic_behavior():
-    example("test")
+def test_run_ls():
+    # Test the run function with a simple ls command
+    result = run("ls")
+    assert result == 0  # os.system returns 0 on success

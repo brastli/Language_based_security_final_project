@@ -1,6 +1,8 @@
-# Functional test for the vulnerable code
+from vulnerable import run_backup
 
-from vulnerable import example
+def test_run_backup_with_valid_directory():
+    # Assuming the backup script and directory are set up correctly for testing
+    assert run_backup("/valid/directory") == True
 
-def test_basic_behavior():
-    example("test")
+def test_run_backup_with_empty_directory():
+    assert run_backup("") == False

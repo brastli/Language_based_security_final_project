@@ -29,9 +29,9 @@ def apply_patch_smart(file_path, fixed_code):
         f.write("\n")
         f.write(clean_fixed_code)
 
-def verify_patch(file_path, original_cwe, fixed_code):
+
+def verify_patch(file_path, original_cwe, fixed_code, test_file_path): 
     """执行自动化验证流水线并记录详细日志"""
-    # 获取原始代码用于 Diff 对比
     with open(file_path, "r", encoding="utf-8") as f:
         old_code = f.read()
 
@@ -44,7 +44,7 @@ def verify_patch(file_path, original_cwe, fixed_code):
     # 2. 应用补丁
     apply_patch_smart(file_path, fixed_code)
 
-    # 3. 生成 Diff 日志内容
+    # 3. 生成 Diff
     diff = difflib.unified_diff(
         old_code.splitlines(),
         fixed_code.splitlines(),
@@ -54,13 +54,19 @@ def verify_patch(file_path, original_cwe, fixed_code):
     )
     diff_log = "\n".join(list(diff))
 
-    # 4. 功能回归测试 (增加超时处理，防止死锁)
+    # 4. 功能回归测试 (适配 dataset 目录结构)
+    # 获取测试脚本所在的目录 (例如: dataset/case_001_eval)
+    case_dir = os.path.dirname(test_file_path)
+    # 获取测试脚本的文件名 (例如: test_case.py)
+    test_filename = os.path.basename(test_file_path)
+
     try:
         test_res = subprocess.run(
-            ["python", "-m", "pytest", "tests/test_samples.py"],
+            ["python", "-m", "pytest", test_filename], 
+            cwd=case_dir, # 【核心改动】：将执行目录切换到 case 文件夹内
             capture_output=True,
             text=True,
-            timeout=30  # 30秒超时保护
+            timeout=30  
         )
         test_output = test_res.stdout if test_res.returncode != 0 else "All Tests Passed"
         success = test_res.returncode == 0

@@ -1,0 +1,1197 @@
+
+[STEP 0] GENERATING TEST CASE FOR: case_001_eval
+STATUS: test_case.py generated successfully.
+--- requesting LLM to repair CWE-78 ---
+
+============================================================
+PROCESSING FILE: dataset\case_001_eval\vulnerable.py
+VULNERABILITY DETECTED: CWE-78
+============================================================
+
+[STEP 1] LLM REPAIR STRATEGY:
+The original function uses 'eval', which can execute arbitrary code and is vulnerable to code injection attacks (CWE-78). To fix this, we should avoid 'eval' and instead use a safer alternative. If the input is expected to be a mathematical expression, we can use 'ast.literal_eval' to safely evaluate it. This function only evaluates literals and is safe from code injection.
+
+[STEP 2] PATCH ANALYSIS (DIFF):
+--- Original
++++ Fixed
+@@ -1,5 +1,4 @@
++import ast
++
+ def run(user_input):
+-    return eval(user_input)
+-
+-if __name__ == "__main__":
+-    print(run("__import__('os').getcwd()"))
++    return ast.literal_eval(user_input)
+
+[STEP 3] TRIPLE-GUARDRAIL VERIFICATION:
+RESULT: [REJECTED]
+REASON: Functional Regression
+
+--- PYTEST EXECUTION LOG ---
+============================= test session starts =============================
+platform win32 -- Python 3.13.12, pytest-9.0.2, pluggy-1.6.0
+rootdir: C:\Users\11855\Desktop\language based security\project\dataset\case_001_eval
+plugins: anyio-4.12.0
+collected 2 items
+
+test_case.py FF                                                          [100%]
+
+================================== FAILURES ===================================
+_____________________ test_run_with_arithmetic_expression _____________________
+
+    def test_run_with_arithmetic_expression():
+>       assert run("2 + 2") == 4
+               ^^^^^^^^^^^^
+
+test_case.py:4: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+vulnerable.py:5: in run
+    return ast.literal_eval(user_input)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\ast.py:110: in literal_eval
+    return _convert(node_or_string)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\ast.py:109: in _convert
+    return _convert_signed_num(node)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\ast.py:83: in _convert_signed_num
+    return _convert_num(node)
+           ^^^^^^^^^^^^^^^^^^
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\ast.py:74: in _convert_num
+    _raise_malformed_node(node)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+node = <ast.BinOp object at 0x0000025CFA2C1790>
+
+    def _raise_malformed_node(node):
+        msg = "malformed node or string"
+        if lno := getattr(node, 'lineno', None):
+            msg += f' on line {lno}'
+>       raise ValueError(msg + f': {node!r}')
+E       ValueError: malformed node or string on line 1: <ast.BinOp object at 0x0000025CFA2C1790>
+
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\ast.py:71: ValueError
+_____________________ test_run_with_string_concatenation ______________________
+
+    def test_run_with_string_concatenation():
+>       assert run("'Hello, ' + 'World!'") == "Hello, World!"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+test_case.py:7: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+vulnerable.py:5: in run
+    return ast.literal_eval(user_input)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\ast.py:110: in literal_eval
+    return _convert(node_or_string)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\ast.py:102: in _convert
+    left = _convert_signed_num(node.left)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\ast.py:83: in _convert_signed_num
+    return _convert_num(node)
+           ^^^^^^^^^^^^^^^^^^
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\ast.py:74: in _convert_num
+    _raise_malformed_node(node)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+node = <ast.Constant object at 0x0000025CFA6488D0>
+
+    def _raise_malformed_node(node):
+        msg = "malformed node or string"
+        if lno := getattr(node, 'lineno', None):
+            msg += f' on line {lno}'
+>       raise ValueError(msg + f': {node!r}')
+E       ValueError: malformed node or string on line 1: <ast.Constant object at 0x0000025CFA6488D0>
+
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\ast.py:71: ValueError
+=========================== short test summary info ===========================
+FAILED test_case.py::test_run_with_arithmetic_expression - ValueError: malfor...
+FAILED test_case.py::test_run_with_string_concatenation - ValueError: malform...
+============================== 2 failed in 0.40s ==============================
+
+
+[STEP 4] POST-PROCESS:
+ACTION: Automated Rollback Triggered.
+STATUS: Environment restored to initial baseline.
+============================================================
+
+
+[STEP 0] GENERATING TEST CASE FOR: case_002_os_system
+STATUS: test_case.py generated successfully.
+--- requesting LLM to repair CWE-78 ---
+
+============================================================
+PROCESSING FILE: dataset\case_002_os_system\vulnerable.py
+VULNERABILITY DETECTED: CWE-78
+============================================================
+
+[STEP 1] LLM REPAIR STRATEGY:
+The original function is vulnerable to command injection (CWE-78) because it directly executes the input command using os.system. To mitigate this, I will use the subprocess module with a list of arguments to safely execute the command, which avoids shell interpretation and reduces the risk of injection.
+
+[STEP 2] PATCH ANALYSIS (DIFF):
+--- Original
++++ Fixed
+@@ -1,7 +1,6 @@
+-import os
++import subprocess
+ 
+ def run(cmd):
+-    return os.system(cmd)
+-
+-if __name__ == "__main__":
+-    run("echo hello; ls")
++    if isinstance(cmd, str):
++        cmd = cmd.split()
++    return subprocess.run(cmd, check=True)
+
+[STEP 3] TRIPLE-GUARDRAIL VERIFICATION:
+RESULT: [REJECTED]
+REASON: Functional Regression
+
+--- PYTEST EXECUTION LOG ---
+============================= test session starts =============================
+platform win32 -- Python 3.13.12, pytest-9.0.2, pluggy-1.6.0
+rootdir: C:\Users\11855\Desktop\language based security\project\dataset\case_002_os_system
+plugins: anyio-4.12.0
+collected 2 items
+
+test_case.py FF                                                          [100%]
+
+================================== FAILURES ===================================
+________________________________ test_run_echo ________________________________
+
+    def test_run_echo():
+        # Test the run function with a simple echo command
+>       result = run("echo hello")
+                 ^^^^^^^^^^^^^^^^^
+
+test_case.py:7: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+vulnerable.py:8: in run
+    return subprocess.run(cmd, check=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\subprocess.py:554: in run
+    with Popen(*popenargs, **kwargs) as process:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\subprocess.py:1039: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <Popen: returncode: None args: ['echo', 'hello']>, args = 'echo hello'
+executable = None, preexec_fn = None, close_fds = True, pass_fds = ()
+cwd = None, env = None
+startupinfo = <subprocess.STARTUPINFO object at 0x0000022359CA3B60>
+creationflags = 0, shell = False, p2cread = -1, p2cwrite = -1, c2pread = -1
+c2pwrite = -1, errread = -1, errwrite = -1, unused_restore_signals = True
+unused_gid = None, unused_gids = None, unused_uid = None, unused_umask = -1
+unused_start_new_session = False, unused_process_group = -1
+
+    def _execute_child(self, args, executable, preexec_fn, close_fds,
+                       pass_fds, cwd, env,
+                       startupinfo, creationflags, shell,
+                       p2cread, p2cwrite,
+                       c2pread, c2pwrite,
+                       errread, errwrite,
+                       unused_restore_signals,
+                       unused_gid, unused_gids, unused_uid,
+                       unused_umask,
+                       unused_start_new_session, unused_process_group):
+        """Execute program (MS Windows version)"""
+    
+        assert not pass_fds, "pass_fds not supported on Windows."
+    
+        if isinstance(args, str):
+            pass
+        elif isinstance(args, bytes):
+            if shell:
+                raise TypeError('bytes args is not allowed on Windows')
+            args = list2cmdline([args])
+        elif isinstance(args, os.PathLike):
+            if shell:
+                raise TypeError('path-like args is not allowed when '
+                                'shell is true')
+            args = list2cmdline([args])
+        else:
+            args = list2cmdline(args)
+    
+        if executable is not None:
+            executable = os.fsdecode(executable)
+    
+        # Process startup details
+        if startupinfo is None:
+            startupinfo = STARTUPINFO()
+        else:
+            # bpo-34044: Copy STARTUPINFO since it is modified above,
+            # so the caller can reuse it multiple times.
+            startupinfo = startupinfo.copy()
+    
+        use_std_handles = -1 not in (p2cread, c2pwrite, errwrite)
+        if use_std_handles:
+            startupinfo.dwFlags |= _winapi.STARTF_USESTDHANDLES
+            startupinfo.hStdInput = p2cread
+            startupinfo.hStdOutput = c2pwrite
+            startupinfo.hStdError = errwrite
+    
+        attribute_list = startupinfo.lpAttributeList
+        have_handle_list = bool(attribute_list and
+                                "handle_list" in attribute_list and
+                                attribute_list["handle_list"])
+    
+        # If we were given an handle_list or need to create one
+        if have_handle_list or (use_std_handles and close_fds):
+            if attribute_list is None:
+                attribute_list = startupinfo.lpAttributeList = {}
+            handle_list = attribute_list["handle_list"] = \
+                list(attribute_list.get("handle_list", []))
+    
+            if use_std_handles:
+                handle_list += [int(p2cread), int(c2pwrite), int(errwrite)]
+    
+            handle_list[:] = self._filter_handle_list(handle_list)
+    
+            if handle_list:
+                if not close_fds:
+                    warnings.warn("startupinfo.lpAttributeList['handle_list'] "
+                                  "overriding close_fds", RuntimeWarning)
+    
+                # When using the handle_list we always request to inherit
+                # handles but the only handles that will be inherited are
+                # the ones in the handle_list
+                close_fds = False
+    
+        if shell:
+            startupinfo.dwFlags |= _winapi.STARTF_USESHOWWINDOW
+            startupinfo.wShowWindow = _winapi.SW_HIDE
+            if not executable:
+                # gh-101283: without a fully-qualified path, before Windows
+                # checks the system directories, it first looks in the
+                # application directory, and also the current directory if
+                # NeedCurrentDirectoryForExePathW(ExeName) is true, so try
+                # to avoid executing unqualified "cmd.exe".
+                comspec = os.environ.get('ComSpec')
+                if not comspec:
+                    system_root = os.environ.get('SystemRoot', '')
+                    comspec = os.path.join(system_root, 'System32', 'cmd.exe')
+                    if not os.path.isabs(comspec):
+                        raise FileNotFoundError('shell not found: neither %ComSpec% nor %SystemRoot% is set')
+                if os.path.isabs(comspec):
+                    executable = comspec
+            else:
+                comspec = executable
+    
+            args = '{} /c "{}"'.format (comspec, args)
+    
+        if cwd is not None:
+            cwd = os.fsdecode(cwd)
+    
+        sys.audit("subprocess.Popen", executable, args, cwd, env)
+    
+        # Start the process
+        try:
+>           hp, ht, pid, tid = _winapi.CreateProcess(executable, args,
+                                     # no special security
+                                     None, None,
+                                     int(not close_fds),
+                                     creationflags,
+                                     env,
+                                     cwd,
+                                     startupinfo)
+E                                    FileNotFoundError: [WinError 2] The system cannot find the file specified
+
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\subprocess.py:1554: FileNotFoundError
+_________________________________ test_run_ls _________________________________
+
+    def test_run_ls():
+        # Test the run function with a simple ls command
+>       result = run("ls")
+                 ^^^^^^^^^
+
+test_case.py:12: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+vulnerable.py:8: in run
+    return subprocess.run(cmd, check=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\subprocess.py:554: in run
+    with Popen(*popenargs, **kwargs) as process:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\subprocess.py:1039: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <Popen: returncode: None args: ['ls']>, args = 'ls', executable = None
+preexec_fn = None, close_fds = True, pass_fds = (), cwd = None, env = None
+startupinfo = <subprocess.STARTUPINFO object at 0x0000022359CE60D0>
+creationflags = 0, shell = False, p2cread = -1, p2cwrite = -1, c2pread = -1
+c2pwrite = -1, errread = -1, errwrite = -1, unused_restore_signals = True
+unused_gid = None, unused_gids = None, unused_uid = None, unused_umask = -1
+unused_start_new_session = False, unused_process_group = -1
+
+    def _execute_child(self, args, executable, preexec_fn, close_fds,
+                       pass_fds, cwd, env,
+                       startupinfo, creationflags, shell,
+                       p2cread, p2cwrite,
+                       c2pread, c2pwrite,
+                       errread, errwrite,
+                       unused_restore_signals,
+                       unused_gid, unused_gids, unused_uid,
+                       unused_umask,
+                       unused_start_new_session, unused_process_group):
+        """Execute program (MS Windows version)"""
+    
+        assert not pass_fds, "pass_fds not supported on Windows."
+    
+        if isinstance(args, str):
+            pass
+        elif isinstance(args, bytes):
+            if shell:
+                raise TypeError('bytes args is not allowed on Windows')
+            args = list2cmdline([args])
+        elif isinstance(args, os.PathLike):
+            if shell:
+                raise TypeError('path-like args is not allowed when '
+                                'shell is true')
+            args = list2cmdline([args])
+        else:
+            args = list2cmdline(args)
+    
+        if executable is not None:
+            executable = os.fsdecode(executable)
+    
+        # Process startup details
+        if startupinfo is None:
+            startupinfo = STARTUPINFO()
+        else:
+            # bpo-34044: Copy STARTUPINFO since it is modified above,
+            # so the caller can reuse it multiple times.
+            startupinfo = startupinfo.copy()
+    
+        use_std_handles = -1 not in (p2cread, c2pwrite, errwrite)
+        if use_std_handles:
+            startupinfo.dwFlags |= _winapi.STARTF_USESTDHANDLES
+            startupinfo.hStdInput = p2cread
+            startupinfo.hStdOutput = c2pwrite
+            startupinfo.hStdError = errwrite
+    
+        attribute_list = startupinfo.lpAttributeList
+        have_handle_list = bool(attribute_list and
+                                "handle_list" in attribute_list and
+                                attribute_list["handle_list"])
+    
+        # If we were given an handle_list or need to create one
+        if have_handle_list or (use_std_handles and close_fds):
+            if attribute_list is None:
+                attribute_list = startupinfo.lpAttributeList = {}
+            handle_list = attribute_list["handle_list"] = \
+                list(attribute_list.get("handle_list", []))
+    
+            if use_std_handles:
+                handle_list += [int(p2cread), int(c2pwrite), int(errwrite)]
+    
+            handle_list[:] = self._filter_handle_list(handle_list)
+    
+            if handle_list:
+                if not close_fds:
+                    warnings.warn("startupinfo.lpAttributeList['handle_list'] "
+                                  "overriding close_fds", RuntimeWarning)
+    
+                # When using the handle_list we always request to inherit
+                # handles but the only handles that will be inherited are
+                # the ones in the handle_list
+                close_fds = False
+    
+        if shell:
+            startupinfo.dwFlags |= _winapi.STARTF_USESHOWWINDOW
+            startupinfo.wShowWindow = _winapi.SW_HIDE
+            if not executable:
+                # gh-101283: without a fully-qualified path, before Windows
+                # checks the system directories, it first looks in the
+                # application directory, and also the current directory if
+                # NeedCurrentDirectoryForExePathW(ExeName) is true, so try
+                # to avoid executing unqualified "cmd.exe".
+                comspec = os.environ.get('ComSpec')
+                if not comspec:
+                    system_root = os.environ.get('SystemRoot', '')
+                    comspec = os.path.join(system_root, 'System32', 'cmd.exe')
+                    if not os.path.isabs(comspec):
+                        raise FileNotFoundError('shell not found: neither %ComSpec% nor %SystemRoot% is set')
+                if os.path.isabs(comspec):
+                    executable = comspec
+            else:
+                comspec = executable
+    
+            args = '{} /c "{}"'.format (comspec, args)
+    
+        if cwd is not None:
+            cwd = os.fsdecode(cwd)
+    
+        sys.audit("subprocess.Popen", executable, args, cwd, env)
+    
+        # Start the process
+        try:
+>           hp, ht, pid, tid = _winapi.CreateProcess(executable, args,
+                                     # no special security
+                                     None, None,
+                                     int(not close_fds),
+                                     creationflags,
+                                     env,
+                                     cwd,
+                                     startupinfo)
+E                                    FileNotFoundError: [WinError 2] The system cannot find the file specified
+
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\subprocess.py:1554: FileNotFoundError
+=========================== short test summary info ===========================
+FAILED test_case.py::test_run_echo - FileNotFoundError: [WinError 2] The syst...
+FAILED test_case.py::test_run_ls - FileNotFoundError: [WinError 2] The system...
+============================== 2 failed in 0.31s ==============================
+
+
+[STEP 4] POST-PROCESS:
+ACTION: Automated Rollback Triggered.
+STATUS: Environment restored to initial baseline.
+============================================================
+
+
+[STEP 0] GENERATING TEST CASE FOR: case_003_subprocess_shell
+STATUS: test_case.py generated successfully.
+
+[STEP 0] GENERATING TEST CASE FOR: case_004
+STATUS: test_case.py generated successfully.
+
+[STEP 0] GENERATING TEST CASE FOR: case_005
+STATUS: test_case.py generated successfully.
+
+[STEP 0] GENERATING TEST CASE FOR: case_006_pickle_deserialize
+STATUS: test_case.py generated successfully.
+
+[STEP 0] GENERATING TEST CASE FOR: case_007_random_module
+STATUS: test_case.py generated successfully.
+--- requesting LLM to repair CWE-330 ---
+
+============================================================
+PROCESSING FILE: dataset\case_007_random_module\vulnerable.py
+VULNERABILITY DETECTED: CWE-330
+============================================================
+
+[STEP 1] LLM REPAIR STRATEGY:
+The original function uses 'random.randint' which is not cryptographically secure for generating tokens. To fix this, we should use 'secrets' module which is designed for generating cryptographically strong random numbers suitable for security-sensitive applications.
+
+[STEP 2] PATCH ANALYSIS (DIFF):
+--- Original
++++ Fixed
+@@ -1,7 +1,4 @@
+-import random
++import secrets
+ 
+ def generate_token():
+-    return str(random.randint(100000, 999999))
+-
+-if __name__ == "__main__":
+-    print(generate_token())
++    return str(secrets.randbelow(900000) + 100000)
+
+[STEP 3] TRIPLE-GUARDRAIL VERIFICATION:
+RESULT: [PASSED]
+STATUS: Success
+
+[STEP 4] POST-PROCESS:
+ACTION: Automated Rollback Triggered.
+STATUS: Environment restored to initial baseline.
+============================================================
+
+
+[STEP 0] GENERATING TEST CASE FOR: case_008
+STATUS: test_case.py generated successfully.
+--- requesting LLM to repair CWE-330 ---
+
+============================================================
+PROCESSING FILE: dataset\case_008\vulnerable.py
+VULNERABILITY DETECTED: CWE-330
+============================================================
+
+[STEP 1] LLM REPAIR STRATEGY:
+The original function uses the 'random' module, which is not suitable for cryptographic purposes due to its predictability. To fix the CWE-330 vulnerability, we should use the 'secrets' module, which is designed for generating cryptographically secure random numbers. This ensures that the generated passwords are secure and unpredictable.
+
+[STEP 2] PATCH ANALYSIS (DIFF):
+--- Original
++++ Fixed
+@@ -1,9 +1,6 @@
+-import random
+ import string
++import secrets
+ 
+ def generate_password(length=8):
+     chars = string.ascii_letters + string.digits
+-    return "".join(random.choice(chars) for _ in range(length))
+-
+-if __name__ == "__main__":
+-    print(generate_password())
++    return ''.join((secrets.choice(chars) for _ in range(length)))
+
+[STEP 3] TRIPLE-GUARDRAIL VERIFICATION:
+RESULT: [PASSED]
+STATUS: Success
+
+[STEP 4] POST-PROCESS:
+ACTION: Automated Rollback Triggered.
+STATUS: Environment restored to initial baseline.
+============================================================
+
+
+[STEP 0] GENERATING TEST CASE FOR: case_009_yaml_load
+STATUS: test_case.py generated successfully.
+--- requesting LLM to repair CWE-20 ---
+
+============================================================
+PROCESSING FILE: dataset\case_009_yaml_load\vulnerable.py
+VULNERABILITY DETECTED: CWE-20
+============================================================
+
+[STEP 1] LLM REPAIR STRATEGY:
+The original function uses 'yaml.load' with 'yaml.Loader', which is unsafe as it can execute arbitrary code. To fix this, we should use 'yaml.safe_load' instead, which only allows simple Python objects like integers or lists, thus preventing code execution vulnerabilities.
+
+[STEP 2] PATCH ANALYSIS (DIFF):
+--- Original
++++ Fixed
+@@ -1,8 +1,2 @@
+-import yaml
+-
+ def run(user_input):
+-    return yaml.load(user_input, Loader=yaml.Loader)
+-
+-if __name__ == "__main__":
+-    sample = "a: 1\nb: 2\nc: 3"
+-    print(run(sample))
++    return yaml.safe_load(user_input)
+
+[STEP 3] TRIPLE-GUARDRAIL VERIFICATION:
+RESULT: [PASSED]
+STATUS: Success
+
+[STEP 4] POST-PROCESS:
+ACTION: Automated Rollback Triggered.
+STATUS: Environment restored to initial baseline.
+============================================================
+
+
+[STEP 0] GENERATING TEST CASE FOR: case_010
+STATUS: test_case.py generated successfully.
+--- requesting LLM to repair CWE-78 ---
+
+============================================================
+PROCESSING FILE: dataset\case_010\vulnerable.py
+VULNERABILITY DETECTED: CWE-78
+============================================================
+
+[STEP 1] LLM REPAIR STRATEGY:
+The original function is vulnerable to command injection (CWE-78) because it directly concatenates user input into a shell command. To fix this, we use the 'subprocess' module with 'subprocess.run' and pass the command as a list. This approach avoids shell interpretation of the input, mitigating the risk of injection.
+
+[STEP 2] PATCH ANALYSIS (DIFF):
+--- Original
++++ Fixed
+@@ -1,12 +1,11 @@
+-import os
++import subprocess
+ 
+ def check_host_reachable(host):
+     """Check if a host is reachable by running ping."""
+     if not host or not host.strip():
+         return False
+-    cmd = "ping -c 1 " + host.strip()
+-    exit_code = os.system(cmd)
+-    return exit_code == 0
+-
+-if __name__ == "__main__":
+-    print(check_host_reachable("127.0.0.1"))
++    try:
++        result = subprocess.run(['ping', '-c', '1', host.strip()], capture_output=True, text=True)
++        return result.returncode == 0
++    except Exception:
++        return False
+
+[STEP 3] TRIPLE-GUARDRAIL VERIFICATION:
+RESULT: [REJECTED]
+REASON: Functional Regression
+
+--- PYTEST EXECUTION LOG ---
+============================= test session starts =============================
+platform win32 -- Python 3.13.12, pytest-9.0.2, pluggy-1.6.0
+rootdir: C:\Users\11855\Desktop\language based security\project\dataset\case_010
+plugins: anyio-4.12.0
+collected 2 items
+
+test_case.py F.                                                          [100%]
+
+================================== FAILURES ===================================
+_____________________ test_check_host_reachable_localhost _____________________
+
+    def test_check_host_reachable_localhost():
+>       assert check_host_reachable("127.0.0.1") == True
+E       AssertionError: assert False == True
+E        +  where False = check_host_reachable('127.0.0.1')
+
+test_case.py:4: AssertionError
+=========================== short test summary info ===========================
+FAILED test_case.py::test_check_host_reachable_localhost - AssertionError: as...
+========================= 1 failed, 1 passed in 0.27s =========================
+
+
+[STEP 4] POST-PROCESS:
+ACTION: Automated Rollback Triggered.
+STATUS: Environment restored to initial baseline.
+============================================================
+
+
+[STEP 0] GENERATING TEST CASE FOR: case_011
+STATUS: test_case.py generated successfully.
+
+[STEP 0] GENERATING TEST CASE FOR: case_012
+STATUS: test_case.py generated successfully.
+--- requesting LLM to repair CWE-327 ---
+
+============================================================
+PROCESSING FILE: dataset\case_012\vulnerable.py
+VULNERABILITY DETECTED: CWE-327
+============================================================
+
+[STEP 1] LLM REPAIR STRATEGY:
+The original function uses the MD5 hashing algorithm, which is considered insecure due to its vulnerability to collision attacks (CWE-327). To fix this, I replaced MD5 with the more secure PBKDF2_HMAC algorithm from the hashlib library, which is designed for securely hashing passwords. This algorithm uses a random salt and multiple iterations to enhance security.
+
+[STEP 2] PATCH ANALYSIS (DIFF):
+--- Original
++++ Fixed
+@@ -1,13 +1,13 @@
+ import hashlib
++import os
++
+ 
+ def hash_password(password):
+     """Hash user password for storage in database."""
+     if not password:
+         return None
+-    salt = b"static_salt_v1"
+-    combined = salt + password.encode("utf-8")
+-    digest = hashlib.md5(combined).hexdigest()
+-    return digest
+-
+-if __name__ == "__main__":
+-    print(hash_password("secret123"))
++    salt = os.urandom(16)  # Generate a random 16-byte salt
++    # Use PBKDF2_HMAC with SHA-256, 100,000 iterations
++    digest = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt, 100000)
++    # Return the salt and hash combined
++    return salt.hex() + ':' + digest.hex()
+
+[STEP 3] TRIPLE-GUARDRAIL VERIFICATION:
+RESULT: [REJECTED]
+REASON: Functional Regression
+
+--- PYTEST EXECUTION LOG ---
+============================= test session starts =============================
+platform win32 -- Python 3.13.12, pytest-9.0.2, pluggy-1.6.0
+rootdir: C:\Users\11855\Desktop\language based security\project\dataset\case_012
+plugins: anyio-4.12.0
+collected 2 items
+
+test_case.py F.                                                          [100%]
+
+================================== FAILURES ===================================
+_____________________ test_hash_password_with_valid_input _____________________
+
+    def test_hash_password_with_valid_input():
+        password = "secret123"
+        expected_hash = "5e2c5d8e8a3f7f3e3f3e3f3e3f3e3f3e"
+>       assert hash_password(password) == expected_hash
+E       AssertionError: assert '098d09b96185...b9a8874281f92' == '5e2c5d8e8a3f...e3f3e3f3e3f3e'
+E         
+E         - 5e2c5d8e8a3f7f3e3f3e3f3e3f3e3f3e
+E         + 098d09b96185d32991a8394914ca377f:5311e07cad9b0845bbe2226bc9941da89ac01bf43565068a99fb9a8874281f92
+
+test_case.py:6: AssertionError
+=========================== short test summary info ===========================
+FAILED test_case.py::test_hash_password_with_valid_input - AssertionError: as...
+========================= 1 failed, 1 passed in 0.29s =========================
+
+
+[STEP 4] POST-PROCESS:
+ACTION: Automated Rollback Triggered.
+STATUS: Environment restored to initial baseline.
+============================================================
+
+
+[STEP 0] GENERATING TEST CASE FOR: case_013
+STATUS: test_case.py generated successfully.
+--- requesting LLM to repair CWE-20 ---
+
+============================================================
+PROCESSING FILE: dataset\case_013\vulnerable.py
+VULNERABILITY DETECTED: CWE-20
+============================================================
+
+[STEP 1] LLM REPAIR STRATEGY:
+The original function uses 'yaml.load' which can execute arbitrary code if the input is malicious. To fix this, I replaced 'yaml.load' with 'yaml.safe_load', which is designed to parse YAML safely without executing arbitrary code.
+
+[STEP 2] PATCH ANALYSIS (DIFF):
+--- Original
++++ Fixed
+@@ -1,14 +1,9 @@
+-import yaml
+-
+ def load_user_config(config_str):
+     """Load app configuration from YAML string provided by user."""
+     if not config_str:
+         return {}
+     try:
+-        config = yaml.load(config_str, Loader=yaml.Loader)
++        config = yaml.safe_load(config_str)
+         return config if isinstance(config, dict) else {}
+     except yaml.YAMLError:
+         return {}
+-
+-if __name__ == "__main__":
+-    print(load_user_config("theme: dark\nlang: en"))
+
+[STEP 3] TRIPLE-GUARDRAIL VERIFICATION:
+RESULT: [PASSED]
+STATUS: Success
+
+[STEP 4] POST-PROCESS:
+ACTION: Automated Rollback Triggered.
+STATUS: Environment restored to initial baseline.
+============================================================
+
+
+[STEP 0] GENERATING TEST CASE FOR: case_014
+STATUS: test_case.py generated successfully.
+--- requesting LLM to repair CWE-330 ---
+
+============================================================
+PROCESSING FILE: dataset\case_014\vulnerable.py
+VULNERABILITY DETECTED: CWE-330
+============================================================
+
+[STEP 1] LLM REPAIR STRATEGY:
+The original function uses the random module, which is not suitable for cryptographic purposes due to its predictability. To fix this, I replaced it with the secrets module, which is designed for generating cryptographically secure random numbers. This change ensures that the session token is generated in a secure manner.
+
+[STEP 2] PATCH ANALYSIS (DIFF):
+--- Original
++++ Fixed
+@@ -1,12 +1,9 @@
+-import random
+ import string
++import secrets
+ 
+ def generate_session_token():
+     """Generate a session token for new user login."""
+     chars = string.ascii_letters + string.digits
+     length = 32
+-    token = "".join(chars[int(random.random() * len(chars))] for _ in range(length))
++    token = ''.join(secrets.choice(chars) for _ in range(length))
+     return token
+-
+-if __name__ == "__main__":
+-    print(generate_session_token())
+
+[STEP 3] TRIPLE-GUARDRAIL VERIFICATION:
+RESULT: [REJECTED]
+REASON: Functional Regression
+
+--- PYTEST EXECUTION LOG ---
+============================= test session starts =============================
+platform win32 -- Python 3.13.12, pytest-9.0.2, pluggy-1.6.0
+rootdir: C:\Users\11855\Desktop\language based security\project\dataset\case_014
+plugins: anyio-4.12.0
+collected 2 items
+
+test_case.py .F                                                          [100%]
+
+================================== FAILURES ===================================
+_____________________ test_generate_session_token_content _____________________
+
+    def test_generate_session_token_content():
+        token = generate_session_token()
+>       assert all(c in (string.ascii_letters + string.digits) for c in token)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+test_case.py:9: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+.0 = <str_ascii_iterator object at 0x000001595BE4C550>
+
+>   assert all(c in (string.ascii_letters + string.digits) for c in token)
+                     ^^^^^^
+E   NameError: name 'string' is not defined. Did you forget to import 'string'?
+
+test_case.py:9: NameError
+=========================== short test summary info ===========================
+FAILED test_case.py::test_generate_session_token_content - NameError: name 's...
+========================= 1 failed, 1 passed in 0.20s =========================
+
+
+[STEP 4] POST-PROCESS:
+ACTION: Automated Rollback Triggered.
+STATUS: Environment restored to initial baseline.
+============================================================
+
+
+[STEP 0] GENERATING TEST CASE FOR: case_015
+STATUS: test_case.py generated successfully.
+
+[STEP 0] GENERATING TEST CASE FOR: case_016
+STATUS: test_case.py generated successfully.
+--- requesting LLM to repair CWE-78 ---
+
+============================================================
+PROCESSING FILE: dataset\case_016\vulnerable.py
+VULNERABILITY DETECTED: CWE-78
+============================================================
+
+[STEP 1] LLM REPAIR STRATEGY:
+The original function uses 'eval', which can execute arbitrary code and is vulnerable to command injection (CWE-78). To fix this, I replaced 'eval' with 'ast.literal_eval', which safely evaluates strings containing Python literals. This ensures only safe expressions are evaluated, mitigating the security risk.
+
+[STEP 2] PATCH ANALYSIS (DIFF):
+--- Original
++++ Fixed
+@@ -1,12 +1,12 @@
++import ast
++
++
+ def compute_expression(expr):
+     """Evaluate a math expression string and return the result (e.g. '1+2*3')."""
+     if not expr or not expr.strip():
+         return None
+     try:
+-        result = eval(expr.strip())
++        result = ast.literal_eval(expr.strip())
+         return float(result) if isinstance(result, (int, float)) else result
+-    except Exception:
++    except (ValueError, SyntaxError):
+         return None
+-
+-if __name__ == "__main__":
+-    print(compute_expression("1 + 2"))
+
+[STEP 3] TRIPLE-GUARDRAIL VERIFICATION:
+RESULT: [REJECTED]
+REASON: Functional Regression
+
+--- PYTEST EXECUTION LOG ---
+============================= test session starts =============================
+platform win32 -- Python 3.13.12, pytest-9.0.2, pluggy-1.6.0
+rootdir: C:\Users\11855\Desktop\language based security\project\dataset\case_016
+plugins: anyio-4.12.0
+collected 2 items
+
+test_case.py FF                                                          [100%]
+
+================================== FAILURES ===================================
+___________________ test_compute_expression_basic_addition ____________________
+
+    def test_compute_expression_basic_addition():
+>       assert compute_expression("1 + 2") == 3.0
+E       AssertionError: assert None == 3.0
+E        +  where None = compute_expression('1 + 2')
+
+test_case.py:4: AssertionError
+_____________ test_compute_expression_multiplication_and_addition _____________
+
+    def test_compute_expression_multiplication_and_addition():
+>       assert compute_expression("1 + 2 * 3") == 7.0
+E       AssertionError: assert None == 7.0
+E        +  where None = compute_expression('1 + 2 * 3')
+
+test_case.py:7: AssertionError
+=========================== short test summary info ===========================
+FAILED test_case.py::test_compute_expression_basic_addition - AssertionError:...
+FAILED test_case.py::test_compute_expression_multiplication_and_addition - As...
+============================== 2 failed in 0.19s ==============================
+
+
+[STEP 4] POST-PROCESS:
+ACTION: Automated Rollback Triggered.
+STATUS: Environment restored to initial baseline.
+============================================================
+
+
+[STEP 0] GENERATING TEST CASE FOR: case_017
+STATUS: test_case.py generated successfully.
+--- requesting LLM to repair CWE-78 ---
+
+============================================================
+PROCESSING FILE: dataset\case_017\vulnerable.py
+VULNERABILITY DETECTED: CWE-78
+============================================================
+
+[STEP 1] LLM REPAIR STRATEGY:
+The original function is vulnerable to command injection (CWE-78) because it directly concatenates user input into a shell command. To fix this, we should use the subprocess module with a list of arguments to safely execute the command, which avoids shell interpretation of the input.
+
+[STEP 2] PATCH ANALYSIS (DIFF):
+--- Original
++++ Fixed
+@@ -1,13 +1,13 @@
+-import os
++import subprocess
+ 
+ def run_backup(target_dir):
+     """Run backup script for the given target directory."""
+     if not target_dir or not target_dir.strip():
+         return False
+-    script = "backup.sh"
+-    cmd = script + " " + target_dir.strip()
+-    ret = os.system(cmd)
+-    return ret == 0
+-
+-if __name__ == "__main__":
+-    run_backup("/var/data")
++    script = 'backup.sh'
++    try:
++        # Use subprocess.run with a list to avoid shell injection
++        result = subprocess.run([script, target_dir.strip()], check=True)
++        return result.returncode == 0
++    except subprocess.CalledProcessError:
++        return False
+
+[STEP 3] TRIPLE-GUARDRAIL VERIFICATION:
+RESULT: [REJECTED]
+REASON: Functional Regression
+
+--- PYTEST EXECUTION LOG ---
+============================= test session starts =============================
+platform win32 -- Python 3.13.12, pytest-9.0.2, pluggy-1.6.0
+rootdir: C:\Users\11855\Desktop\language based security\project\dataset\case_017
+plugins: anyio-4.12.0
+collected 2 items
+
+test_case.py F.                                                          [100%]
+
+================================== FAILURES ===================================
+____________________ test_run_backup_with_valid_directory _____________________
+
+    def test_run_backup_with_valid_directory():
+        # Assuming the backup script and directory are set up correctly for testing
+>       assert run_backup("/valid/directory") == True
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+test_case.py:5: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+vulnerable.py:12: in run_backup
+    result = subprocess.run([script, target_dir.strip()], check=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\subprocess.py:554: in run
+    with Popen(*popenargs, **kwargs) as process:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\subprocess.py:1039: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <Popen: returncode: None args: ['backup.sh', '/valid/directory']>
+args = 'backup.sh /valid/directory', executable = None, preexec_fn = None
+close_fds = True, pass_fds = (), cwd = None, env = None
+startupinfo = <subprocess.STARTUPINFO object at 0x000001BD27B53B60>
+creationflags = 0, shell = False, p2cread = -1, p2cwrite = -1, c2pread = -1
+c2pwrite = -1, errread = -1, errwrite = -1, unused_restore_signals = True
+unused_gid = None, unused_gids = None, unused_uid = None, unused_umask = -1
+unused_start_new_session = False, unused_process_group = -1
+
+    def _execute_child(self, args, executable, preexec_fn, close_fds,
+                       pass_fds, cwd, env,
+                       startupinfo, creationflags, shell,
+                       p2cread, p2cwrite,
+                       c2pread, c2pwrite,
+                       errread, errwrite,
+                       unused_restore_signals,
+                       unused_gid, unused_gids, unused_uid,
+                       unused_umask,
+                       unused_start_new_session, unused_process_group):
+        """Execute program (MS Windows version)"""
+    
+        assert not pass_fds, "pass_fds not supported on Windows."
+    
+        if isinstance(args, str):
+            pass
+        elif isinstance(args, bytes):
+            if shell:
+                raise TypeError('bytes args is not allowed on Windows')
+            args = list2cmdline([args])
+        elif isinstance(args, os.PathLike):
+            if shell:
+                raise TypeError('path-like args is not allowed when '
+                                'shell is true')
+            args = list2cmdline([args])
+        else:
+            args = list2cmdline(args)
+    
+        if executable is not None:
+            executable = os.fsdecode(executable)
+    
+        # Process startup details
+        if startupinfo is None:
+            startupinfo = STARTUPINFO()
+        else:
+            # bpo-34044: Copy STARTUPINFO since it is modified above,
+            # so the caller can reuse it multiple times.
+            startupinfo = startupinfo.copy()
+    
+        use_std_handles = -1 not in (p2cread, c2pwrite, errwrite)
+        if use_std_handles:
+            startupinfo.dwFlags |= _winapi.STARTF_USESTDHANDLES
+            startupinfo.hStdInput = p2cread
+            startupinfo.hStdOutput = c2pwrite
+            startupinfo.hStdError = errwrite
+    
+        attribute_list = startupinfo.lpAttributeList
+        have_handle_list = bool(attribute_list and
+                                "handle_list" in attribute_list and
+                                attribute_list["handle_list"])
+    
+        # If we were given an handle_list or need to create one
+        if have_handle_list or (use_std_handles and close_fds):
+            if attribute_list is None:
+                attribute_list = startupinfo.lpAttributeList = {}
+            handle_list = attribute_list["handle_list"] = \
+                list(attribute_list.get("handle_list", []))
+    
+            if use_std_handles:
+                handle_list += [int(p2cread), int(c2pwrite), int(errwrite)]
+    
+            handle_list[:] = self._filter_handle_list(handle_list)
+    
+            if handle_list:
+                if not close_fds:
+                    warnings.warn("startupinfo.lpAttributeList['handle_list'] "
+                                  "overriding close_fds", RuntimeWarning)
+    
+                # When using the handle_list we always request to inherit
+                # handles but the only handles that will be inherited are
+                # the ones in the handle_list
+                close_fds = False
+    
+        if shell:
+            startupinfo.dwFlags |= _winapi.STARTF_USESHOWWINDOW
+            startupinfo.wShowWindow = _winapi.SW_HIDE
+            if not executable:
+                # gh-101283: without a fully-qualified path, before Windows
+                # checks the system directories, it first looks in the
+                # application directory, and also the current directory if
+                # NeedCurrentDirectoryForExePathW(ExeName) is true, so try
+                # to avoid executing unqualified "cmd.exe".
+                comspec = os.environ.get('ComSpec')
+                if not comspec:
+                    system_root = os.environ.get('SystemRoot', '')
+                    comspec = os.path.join(system_root, 'System32', 'cmd.exe')
+                    if not os.path.isabs(comspec):
+                        raise FileNotFoundError('shell not found: neither %ComSpec% nor %SystemRoot% is set')
+                if os.path.isabs(comspec):
+                    executable = comspec
+            else:
+                comspec = executable
+    
+            args = '{} /c "{}"'.format (comspec, args)
+    
+        if cwd is not None:
+            cwd = os.fsdecode(cwd)
+    
+        sys.audit("subprocess.Popen", executable, args, cwd, env)
+    
+        # Start the process
+        try:
+>           hp, ht, pid, tid = _winapi.CreateProcess(executable, args,
+                                     # no special security
+                                     None, None,
+                                     int(not close_fds),
+                                     creationflags,
+                                     env,
+                                     cwd,
+                                     startupinfo)
+E                                    FileNotFoundError: [WinError 2] The system cannot find the file specified
+
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\subprocess.py:1554: FileNotFoundError
+=========================== short test summary info ===========================
+FAILED test_case.py::test_run_backup_with_valid_directory - FileNotFoundError...
+========================= 1 failed, 1 passed in 0.23s =========================
+
+
+[STEP 4] POST-PROCESS:
+ACTION: Automated Rollback Triggered.
+STATUS: Environment restored to initial baseline.
+============================================================
+
+
+[STEP 0] GENERATING TEST CASE FOR: case_018
+STATUS: test_case.py generated successfully.
+--- requesting LLM to repair CWE-502 ---
+
+============================================================
+PROCESSING FILE: dataset\case_018\vulnerable.py
+VULNERABILITY DETECTED: CWE-502
+============================================================
+
+[STEP 1] LLM REPAIR STRATEGY:
+The original function uses 'marshal.loads', which is unsafe for loading untrusted data due to potential code execution vulnerabilities (CWE-502). To fix this, we replace 'marshal.loads' with 'json.loads', which is safer for deserializing data as it does not execute code. This change assumes that the data is serialized in JSON format, which is a common and secure practice for storing simple data structures like dictionaries.
+
+[STEP 2] PATCH ANALYSIS (DIFF):
+--- Original
++++ Fixed
+@@ -1,14 +1,11 @@
+-import marshal
++import json
+ 
+ def load_cached_preferences(data_bytes):
+     """Load serialized user preferences from cache."""
+     if not data_bytes or len(data_bytes) == 0:
+         return {}
+     try:
+-        obj = marshal.loads(data_bytes)
++        obj = json.loads(data_bytes.decode('utf-8'))
+         return obj if isinstance(obj, dict) else {}
+-    except (ValueError, TypeError):
++    except (json.JSONDecodeError, TypeError, UnicodeDecodeError):
+         return {}
+-
+-if __name__ == "__main__":
+-    load_cached_preferences(b"")
+
+[STEP 3] TRIPLE-GUARDRAIL VERIFICATION:
+RESULT: [REJECTED]
+REASON: Functional Regression
+
+--- PYTEST EXECUTION LOG ---
+============================= test session starts =============================
+platform win32 -- Python 3.13.12, pytest-9.0.2, pluggy-1.6.0
+rootdir: C:\Users\11855\Desktop\language based security\project\dataset\case_018
+plugins: anyio-4.12.0
+collected 2 items
+
+test_case.py .F                                                          [100%]
+
+================================== FAILURES ===================================
+___________________ test_load_cached_preferences_valid_dict ___________________
+
+    def test_load_cached_preferences_valid_dict():
+        # This is a marshaled version of a simple dictionary: {'key': 'value'}
+        marshaled_data = b'\xe3\x00\x00\x00\x00\x00\x00\x00\x07\x00\x00\x00\x7d\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x00\x73\x03\x00\x00\x00key\x00\x01\x00\x00\x00\x73\x05\x00\x00\x00value\x00\x00'
+        expected_output = {'key': 'value'}
+>       assert load_cached_preferences(marshaled_data) == expected_output
+E       AssertionError: assert {} == {'key': 'value'}
+E         
+E         Right contains 1 more item:
+E         {'key': 'value'}
+E         Use -v to get more diff
+
+test_case.py:10: AssertionError
+=========================== short test summary info ===========================
+FAILED test_case.py::test_load_cached_preferences_valid_dict - AssertionError...
+========================= 1 failed, 1 passed in 0.18s =========================
+
+
+[STEP 4] POST-PROCESS:
+ACTION: Automated Rollback Triggered.
+STATUS: Environment restored to initial baseline.
+============================================================
+
+
+[STEP 0] GENERATING TEST CASE FOR: case_019
+STATUS: test_case.py generated successfully.
+
+[STEP 0] GENERATING TEST CASE FOR: case_020

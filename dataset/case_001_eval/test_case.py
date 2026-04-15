@@ -1,6 +1,7 @@
-# Functional test for the vulnerable code
+from vulnerable import run
 
-from vulnerable import example
+def test_run_with_arithmetic_expression():
+    assert run("2 + 2") == 4
 
-def test_basic_behavior():
-    example("test")
+def test_run_with_string_concatenation():
+    assert run("'Hello, ' + 'World!'") == "Hello, World!"
