@@ -23,20 +23,29 @@ def run_project_pipeline(project_path):
     repair_order = analyzer.get_repair_order(src_dir)
     print(f"\n{'='*60}\nPROJECT: {os.path.basename(project_path)}\nSEQUENCE: {[os.path.basename(x) for x in repair_order]}\n{'='*60}")
 
+    # 确保测试目录存在
+    os.makedirs(test_dir, exist_ok=True)
+
     for file_path in repair_order:
         print(f"\n>>> TARGETING LAYER: {os.path.basename(file_path)}")
-        with open(file_path, "r") as f: buggy_backup = f.read()
+        with open(file_path, "r", encoding="utf-8") as f: 
+            buggy_backup = f.read()
 
-        # 动态生成测试 (若不存在)
-        if not os.listdir(test_dir):
+        # 【修复】检查当前特定文件的测试用例是否存在，而不是查整个目录
+        target_test_file = os.path.join(test_dir, f"test_{os.path.basename(file_path)}")
+        if not os.path.exists(target_test_file):
+            print(f"Generating test cases for {os.path.basename(file_path)}...")
             test_code = generate_test_for_file(buggy_backup)
-            with open(os.path.join(test_dir, f"test_{os.path.basename(file_path)}"), "w") as f:
-                f.write(test_code)
+            if test_code:
+                with open(target_test_file, "w", encoding="utf-8") as f:
+                    f.write(test_code)
 
         # 发现漏洞
         scan_data = scanner.run_bandit_scan(file_path)
         issues = scan_data.get('results', [])
-        if not issues: continue
+        if not issues: 
+            print("STATUS: Secure layer. Moving upward.")
+            continue
 
         issue = issues[0]
         cwe_id = issue['issue_cwe']['id']
@@ -45,7 +54,7 @@ def run_project_pipeline(project_path):
         # 记忆闭环修复
         prev_err = None
         for attempt in range(1, 4):
-            print(f"[ATTEMPT {attempt}/3] Patching...")
+            print(f"[ATTEMPT {attempt}/3] Patching CWE-{cwe_id}...")
             reason, patch = repairer.request_repair(cwe_id, func_code, flow_fact, prev_err)
             success, msg, log = guardrail_manager.verify_patch(file_path, cwe_id, patch, test_dir)
             
@@ -53,10 +62,10 @@ def run_project_pipeline(project_path):
                 print(f"[PASSED] Layer secured."); break
             else:
                 print(f"[REJECTED] {msg}"); prev_err = log.get("test_report", "")[-1000:]
-                with open(file_path, "w") as f: f.write(buggy_backup)
+                with open(file_path, "w", encoding="utf-8") as f: f.write(buggy_backup)
         else:
             print("!!! CRITICAL FAILURE AT BASE LAYER. HALTING."); return
-
+        
 def main():
     sys.stdout = Logger()
     dataset = "dataset"
