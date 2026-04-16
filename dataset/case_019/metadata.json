@@ -1,9 +1,0 @@
-{
-  "case_id": "case_019",
-  "cwe": "CWE-327",
-  "bandit_rule": "B304",
-  "source": "bandit_examples",
-  "vulnerability_type": "weak_crypto",
-  "vulnerable_function": "Cipher",
-  "description": "Using DES cipher without proper mode for encryption is cryptographically weak"
-}

@@ -1,9 +1,0 @@
-{
-  "case_id": "case_014",
-  "cwe": "CWE-330",
-  "bandit_rule": "B311",
-  "source": "bandit_examples",
-  "vulnerability_type": "weak_randomness",
-  "vulnerable_function": "random.random",
-  "description": "Using random.random for session token generation produces predictable values"
-}

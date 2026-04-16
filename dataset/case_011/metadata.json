@@ -1,9 +1,0 @@
-{
-  "case_id": "case_011",
-  "cwe": "CWE-502",
-  "bandit_rule": "B301",
-  "source": "bandit_examples",
-  "vulnerability_type": "insecure_deserialization",
-  "vulnerable_function": "pickle.loads",
-  "description": "Loading session data from cookie with pickle.loads allows arbitrary code execution"
-}

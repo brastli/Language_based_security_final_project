@@ -1,9 +1,0 @@
-{
-  "case_id": "case_020",
-  "cwe": "CWE-20",
-  "bandit_rule": "B506",
-  "source": "bandit_examples",
-  "vulnerability_type": "unsafe_yaml_load",
-  "vulnerable_function": "yaml.load",
-  "description": "Loading feature flags from YAML string with yaml.load allows arbitrary object deserialization"
-}

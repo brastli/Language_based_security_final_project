@@ -1,0 +1,4 @@
+openai
+bandit
+pytest
+python-dotenv

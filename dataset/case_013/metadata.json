@@ -1,9 +1,0 @@
-{
-  "case_id": "case_013",
-  "cwe": "CWE-20",
-  "bandit_rule": "B506",
-  "source": "bandit_examples",
-  "vulnerability_type": "unsafe_yaml_load",
-  "vulnerable_function": "yaml.load",
-  "description": "Loading user-provided config with yaml.load without safe loader allows object injection"
-}

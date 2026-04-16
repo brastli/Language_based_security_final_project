@@ -1,9 +1,0 @@
-{
-  "case_id": "case_008",
-  "cwe": "CWE-330",
-  "bandit_rule": "B311",
-  "source": "bandit_examples",
-  "vulnerability_type": "weak_randomness",
-  "vulnerable_function": "random.choice",
-  "description": "Use of random.choice for security-sensitive password generation may produce predictable values"
-}

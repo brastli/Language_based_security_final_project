@@ -1,9 +1,0 @@
-{
-  "case_id": "case_002",
-  "cwe": "CWE-78",
-  "bandit_rule": "B605",
-  "source": "bandit_examples",
-  "vulnerability_type": "command_injection",
-  "vulnerable_function": "os.system",
-  "description": "Use of os.system on user-controlled input may lead to command injection"
-}

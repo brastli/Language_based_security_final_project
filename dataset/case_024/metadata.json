@@ -1,9 +1,0 @@
-{
-  "case_id": "case_024",
-  "cwe": "CWE-78",
-  "bandit_rule": "B605",
-  "source": "bandit_examples",
-  "vulnerability_type": "command_injection",
-  "vulnerable_function": "os.system",
-  "description": "Sending email with user-controlled subject via system sendmail leads to command injection"
-}

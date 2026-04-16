@@ -1,9 +1,0 @@
-{
-  "case_id": "case_006",
-  "cwe": "CWE-502",
-  "bandit_rule": "B301",
-  "source": "bandit_examples",
-  "vulnerability_type": "insecure_deserialization",
-  "vulnerable_function": "pickle.loads",
-  "description": "Using pickle.loads on untrusted input may allow arbitrary code execution through malicious serialized objects"
-}

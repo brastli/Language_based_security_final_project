@@ -1,77 +1,111 @@
 import os
 import sys
-import analyzer
-import scanner
-import slicer
-import repairer
-import guardrail_manager
+import ast
+from collections import deque
 from auto_generate_tests import generate_test_for_file
+from scanner import run_bandit_scan
+from slicer import get_function_and_flow
+from repairer import request_repair
+from guardrail_manager import verify_patch
 
-class Logger:
+class RepositoryAnalyzer:
+    """利用 AST 解析文件依赖并生成拓扑修复序列"""
+    @staticmethod
+    def get_dependencies(file_path, project_root):
+        deps = []
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                tree = ast.parse(f.read())
+            for node in ast.walk(tree):
+                if isinstance(node, ast.ImportFrom) and node.module:
+                    deps.append(node.module.split('.')[0] + ".py")
+                elif isinstance(node, ast.Import):
+                    for alias in node.names:
+                        deps.append(alias.name.split('.')[0] + ".py")
+        except: pass
+        return [d for d in deps if os.path.exists(os.path.join(project_root, d))]
+
+    @classmethod
+    def get_repair_sequence(cls, project_path):
+        files = [f for f in os.listdir(project_path) if f.endswith('.py') and not f.startswith('test_')]
+        adj = {f: [] for f in files}; in_degree = {f: 0 for f in files}
+        for f in files:
+            deps = cls.get_dependencies(os.path.join(project_path, f), project_path)
+            for d in deps:
+                if d in adj:
+                    adj[d].append(f); in_degree[f] += 1
+        queue = deque([f for f in files if in_degree[f] == 0])
+        sequence = []
+        while queue:
+            u = queue.popleft(); sequence.append(u)
+            for v in adj[u]:
+                in_degree[v] -= 1
+                if in_degree[v] == 0: queue.append(v)
+        return sequence
+
+class Logger(object):
     def __init__(self, filename="execution_results.txt"):
         self.terminal = sys.stdout
         self.log = open(filename, "w", encoding="utf-8")
-    def write(self, m):
-        self.terminal.write(m); self.log.write(m); self.log.flush()
+    def write(self, message):
+        self.terminal.write(message); self.log.write(message); self.log.flush()
     def flush(self): pass
 
 def run_project_pipeline(project_path):
-    src_dir = os.path.join(project_path, "src")
-    test_dir = os.path.join(project_path, "tests")
+    project_name = os.path.basename(project_path)
+    repair_sequence = RepositoryAnalyzer.get_repair_sequence(project_path)
     
-    # [STEP 0] 计算自底向上的修复序列
-    repair_order = analyzer.get_repair_order(src_dir)
-    print(f"\n{'='*60}\nPROJECT: {os.path.basename(project_path)}\nSEQUENCE: {[os.path.basename(x) for x in repair_order]}\n{'='*60}")
+    print("\n" + "="*75)
+    print(f"PROJECT: {project_name}\nTOPOLOGY: {repair_sequence}")
+    print("="*75)
 
-    # 确保测试目录存在
-    os.makedirs(test_dir, exist_ok=True)
-
-    for file_path in repair_order:
-        print(f"\n>>> TARGETING LAYER: {os.path.basename(file_path)}")
-        with open(file_path, "r", encoding="utf-8") as f: 
-            buggy_backup = f.read()
-
-        # 【修复】检查当前特定文件的测试用例是否存在，而不是查整个目录
-        target_test_file = os.path.join(test_dir, f"test_{os.path.basename(file_path)}")
-        if not os.path.exists(target_test_file):
-            print(f"Generating test cases for {os.path.basename(file_path)}...")
-            test_code = generate_test_for_file(buggy_backup)
-            if test_code:
-                with open(target_test_file, "w", encoding="utf-8") as f:
-                    f.write(test_code)
-
-        # 发现漏洞
-        scan_data = scanner.run_bandit_scan(file_path)
-        issues = scan_data.get('results', [])
-        if not issues: 
-            print("STATUS: Secure layer. Moving upward.")
-            continue
-
-        issue = issues[0]
-        cwe_id = issue['issue_cwe']['id']
-        func_code, flow_fact = slicer.get_function_and_flow(file_path, issue['line_number'])
-
-        # 记忆闭环修复
-        prev_err = None
-        for attempt in range(1, 4):
-            print(f"[ATTEMPT {attempt}/3] Patching CWE-{cwe_id}...")
-            reason, patch = repairer.request_repair(cwe_id, func_code, flow_fact, prev_err)
-            success, msg, log = guardrail_manager.verify_patch(file_path, cwe_id, patch, test_dir)
-            
-            if success:
-                print(f"[PASSED] Layer secured."); break
-            else:
-                print(f"[REJECTED] {msg}"); prev_err = log.get("test_report", "")[-1000:]
-                with open(file_path, "w", encoding="utf-8") as f: f.write(buggy_backup)
-        else:
-            print("!!! CRITICAL FAILURE AT BASE LAYER. HALTING."); return
+    for file_name in repair_sequence:
+        file_path = os.path.join(project_path, file_name)
+        test_file_path = os.path.join(project_path, f"test_{file_name}")
+        print(f"\n>>> TARGETING LAYER: {file_name}")
         
+        with open(file_path, "r", encoding="utf-8") as f:
+            original_code = f.read()
+
+        print(f"Generating tests...")
+        test_code = generate_test_for_file(original_code)
+        if test_code:
+            with open(test_file_path, "w", encoding="utf-8") as f: f.write(test_code)
+
+        scan_data = run_bandit_scan(file_path)
+        issues = scan_data.get('results', [])
+        if not issues:
+            print(f"STATUS: [SECURE]"); continue
+
+        issue = issues[0]; cwe_id = issue['issue_cwe']['id']; line_no = issue['line_number']
+        func_code, data_flow_fact = get_function_and_flow(file_path, line_no)
+
+        MAX_RETRIES = 3; previous_error = None; repair_success = False
+        for attempt in range(1, MAX_RETRIES + 1):
+            print(f"[ATTEMPT {attempt}/{MAX_RETRIES}] Repairing CWE-{cwe_id}...")
+            reasoning, fixed_code = request_repair(cwe_id, func_code, data_flow_fact, previous_error)
+            print(f"STRATEGY: {reasoning}")
+
+            success, msg, repair_log = verify_patch(file_path, cwe_id, fixed_code, test_file_path)
+            if success:
+                print(f"RESULT: [PASSED] {msg}"); repair_success = True; break
+            else:
+                print(f"RESULT: [REJECTED] {msg}")
+                if repair_log and repair_log['test_report']:
+                    error_tail = "\n".join(repair_log['test_report'].strip().splitlines()[-5:])
+                    print(f"--- ERROR ---\n{error_tail}"); previous_error = repair_log['test_report'][-1500:]
+                with open(file_path, "w", encoding="utf-8") as f: f.write(original_code)
+
+        if not repair_success:
+            print(f"!!! CRITICAL FAILURE AT {file_name}. HALTING."); break
+
 def main():
-    sys.stdout = Logger()
-    dataset = "dataset"
-    for proj in sorted(os.listdir(dataset)):
-        path = os.path.join(dataset, proj)
-        if os.path.isdir(path): run_project_pipeline(path)
+    sys.stdout = Logger("execution_results.txt")
+    dataset_dir = "dataset"
+    if os.path.exists(dataset_dir):
+        for item in sorted(os.listdir(dataset_dir)):
+            path = os.path.join(dataset_dir, item)
+            if os.path.isdir(path): run_project_pipeline(path)
 
 if __name__ == "__main__":
     main()

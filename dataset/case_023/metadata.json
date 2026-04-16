@@ -1,9 +1,0 @@
-{
-  "case_id": "case_023",
-  "cwe": "CWE-95",
-  "bandit_rule": "B102",
-  "source": "bandit_examples",
-  "vulnerability_type": "code_injection",
-  "vulnerable_function": "exec",
-  "description": "Executing user-provided template code with exec leads to arbitrary code execution"
-}

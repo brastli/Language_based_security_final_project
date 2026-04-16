@@ -1,9 +1,0 @@
-{
-  "case_id": "case_012",
-  "cwe": "CWE-328",
-  "bandit_rule": "B303",
-  "source": "bandit_examples",
-  "vulnerability_type": "weak_crypto",
-  "vulnerable_function": "hashlib.md5",
-  "description": "Using MD5 for password hashing is cryptographically weak and unsuitable for security"
-}

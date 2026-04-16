@@ -1,9 +1,0 @@
-{
-  "case_id": "case_010",
-  "cwe": "CWE-78",
-  "bandit_rule": "B605",
-  "source": "bandit_examples",
-  "vulnerability_type": "command_injection",
-  "vulnerable_function": "os.system",
-  "description": "Ping host from user input via os.system leads to OS command injection"
-}
