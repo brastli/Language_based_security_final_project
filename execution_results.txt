@@ -1,103 +1,216 @@
 
 ===========================================================================
 PROJECT: project_001_sqli
-TOPOLOGY: ['src\\db.py', 'src\\utils.py', 'src\\__init__.py', 'src\\api.py']
+TOPOLOGY: ['src\\db.py', 'src\\utils.py', 'src\\api.py']
 ===========================================================================
 
 >>> TARGETING LAYER: src\db.py
 Generating dynamic tests for db.py...
 --- 正在调用 AI 生成测试用例 (Functional + Security Fuzzing) ---
-[ATTEMPT 1/3] Repairing CWE-89...
-STRATEGY: The original code is vulnerable to SQL injection due to the use of string formatting to construct the SQL query. To fix this, I replaced the string formatting with a parameterized query using a placeholder for the username. This prevents any malicious input from altering the SQL command structure.
-RESULT: [REJECTED] Guardrail Rejected: Test Failed
---- ERROR ---
-FAILED test_db.py::test_functional_get_user_by_name_invalid_user - NameError:...
-FAILED test_db.py::test_security_get_user_by_name_sql_injection_1 - NameError...
-FAILED test_db.py::test_security_get_user_by_name_sql_injection_2 - NameError...
-FAILED test_db.py::test_security_get_user_by_name_sql_injection_3 - NameError...
-============================== 5 failed in 0.22s ==============================
-[ATTEMPT 2/3] Repairing CWE-89...
-STRATEGY: The previous attempt failed because the 'sqlite3' module was not imported, leading to a NameError. To fix this, I will import the 'sqlite3' module at the beginning of the function. Additionally, I will address the SQL injection vulnerability by using parameterized queries instead of string formatting. This will ensure that the 'username' variable is safely passed to the SQL query without risk of injection.
-RESULT: [PASSED] Passed All Guardrails
+STATUS: [SECURE] No vulnerabilities detected by scanner.
+--- RUNNING BASELINE TESTS FOR db.py ---
+BASELINE TEST: [WARNING] Some tests failed, but file remains structurally secure.
+--- TEST DETAILS ---
+>       with pytest.raises(Exception):
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'Exception'>
+
+src\test_db.py:27: Failed
+=========================== short test summary info ===========================
+FAILED src/test_db.py::test_security_sql_injection_1 - Failed: DID NOT RAISE ...
+FAILED src/test_db.py::test_security_sql_injection_2 - Failed: DID NOT RAISE ...
+FAILED src/test_db.py::test_security_sql_injection_3 - Failed: DID NOT RAISE ...
+========================= 3 failed, 3 passed in 0.20s =========================
+
 
 >>> TARGETING LAYER: src\utils.py
 Generating dynamic tests for utils.py...
 --- 正在调用 AI 生成测试用例 (Functional + Security Fuzzing) ---
-STATUS: [SECURE]
+STATUS: [SECURE] No vulnerabilities detected by scanner.
+--- RUNNING BASELINE TESTS FOR utils.py ---
+BASELINE TEST: [WARNING] Some tests failed, but file remains structurally secure.
+--- TEST DETAILS ---
+>       with pytest.raises(Exception):
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'Exception'>
 
->>> TARGETING LAYER: src\__init__.py
-Generating dynamic tests for __init__.py...
---- 正在调用 AI 生成测试用例 (Functional + Security Fuzzing) ---
-STATUS: [SECURE]
+src\test_utils.py:30: Failed
+=========================== short test summary info ===========================
+FAILED src/test_utils.py::test_security_normalize_username_sql_injection - Fa...
+FAILED src/test_utils.py::test_security_normalize_username_command_injection
+FAILED src/test_utils.py::test_security_normalize_username_html_injection - F...
+========================= 3 failed, 5 passed in 0.22s =========================
+
 
 >>> TARGETING LAYER: src\api.py
 Generating dynamic tests for api.py...
 --- 正在调用 AI 生成测试用例 (Functional + Security Fuzzing) ---
-STATUS: [SECURE]
+STATUS: [SECURE] No vulnerabilities detected by scanner.
+--- RUNNING BASELINE TESTS FOR api.py ---
+BASELINE TEST: [WARNING] Some tests failed, but file remains structurally secure.
+--- TEST DETAILS ---
+>           with pytest.raises(Exception):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^
+E           Failed: DID NOT RAISE <class 'Exception'>
+
+src\test_api.py:70: Failed
+=========================== short test summary info ===========================
+FAILED src/test_api.py::test_security_handle_login_request_sql_injection - Fa...
+FAILED src/test_api.py::test_security_handle_login_request_command_injection
+FAILED src/test_api.py::test_security_handle_login_request_xss_injection - Fa...
+========================= 3 failed, 2 passed in 0.21s =========================
+
 
 ===========================================================================
 PROJECT: project_002_cmdi
-TOPOLOGY: ['src\\db.py', 'src\\utils.py', 'src\\__init__.py', 'src\\api.py']
+TOPOLOGY: ['src\\db.py', 'src\\utils.py', 'src\\api.py']
 ===========================================================================
 
 >>> TARGETING LAYER: src\db.py
 Generating dynamic tests for db.py...
 --- 正在调用 AI 生成测试用例 (Functional + Security Fuzzing) ---
-STATUS: [SECURE]
+STATUS: [SECURE] No vulnerabilities detected by scanner.
+--- RUNNING BASELINE TESTS FOR db.py ---
+BASELINE TEST: [WARNING] Some tests failed, but file remains structurally secure.
+--- TEST DETAILS ---
+>           with pytest.raises(Exception):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^
+E           Failed: DID NOT RAISE <class 'Exception'>
+
+src\test_db.py:41: Failed
+=========================== short test summary info ===========================
+FAILED src/test_db.py::test_security_save_scan_record_sql_injection - Failed:...
+FAILED src/test_db.py::test_security_save_scan_record_command_injection - Fai...
+FAILED src/test_db.py::test_security_save_scan_record_code_injection - Failed...
+========================= 3 failed, 2 passed in 0.20s =========================
+
 
 >>> TARGETING LAYER: src\utils.py
 Generating dynamic tests for utils.py...
 --- 正在调用 AI 生成测试用例 (Functional + Security Fuzzing) ---
+[WARNING] Slicer could not extract function at line 1. Fallback to entire file.
+
 [ATTEMPT 1/3] Repairing CWE-78...
-STRATEGY: The original code uses os.system with a formatted string, which is vulnerable to command injection (CWE-78). To mitigate this, I replaced os.system with subprocess.run, passing the command and its arguments as a list. This approach prevents shell injection by treating each list element as a separate argument, ensuring that user input is not executed as a command. Additionally, I validated the 'host' input to allow only valid hostname characters, reducing the risk of injection further.
-RESULT: [REJECTED] Guardrail Rejected: Test Failed
---- ERROR ---
 
-utils.py:8: ValueError
-=========================== short test summary info ===========================
-FAILED test_utils.py::test_security_ping_host - ValueError: Invalid host name
-========================= 1 failed, 1 passed in 4.22s =========================
-[ATTEMPT 2/3] Repairing CWE-78...
-STRATEGY: The previous attempt failed because the validation was too strict, rejecting valid hostnames that contained special characters like hyphens or dots. To fix this, we need to ensure that the host input is sanitized to prevent command injection while allowing valid hostnames. We will use the `subprocess.run()` function to execute the ping command safely, passing the host as a separate argument in a list. This approach prevents command injection by not allowing shell interpretation of the input.
-RESULT: [REJECTED] Guardrail Rejected: Test Failed
---- ERROR ---
+--- 💡 AI REPAIR STRATEGY ---
+The original code already uses subprocess.run with a list of arguments, which is a secure practice to avoid shell injection vulnerabilities. However, the regex pattern for validating the host input is too permissive, allowing potentially dangerous characters. I will refine the regex to allow only valid domain names and IP addresses, enhancing input validation.
 
-utils.py:8: ValueError
-=========================== short test summary info ===========================
-FAILED test_utils.py::test_security_ping_host - ValueError: Invalid host name
-========================= 1 failed, 1 passed in 4.08s =========================
-[ATTEMPT 3/3] Repairing CWE-78...
-STRATEGY: The previous attempt failed because the regex validation was too strict, rejecting valid hostnames that included special characters used in command injection attempts. To fix this, we will use the `subprocess.run()` method to execute the ping command securely. This method allows us to pass command arguments as a list, which prevents shell injection vulnerabilities. We will also implement a more relaxed validation that allows valid hostnames while still preventing injection attempts by ensuring the input does not contain any shell metacharacters.
-RESULT: [REJECTED] Guardrail Rejected: Test Failed
---- ERROR ---
+--- 🛠️ GENERATED PATCH CODE ---
+import subprocess
+import re
 
-utils.py:9: ValueError
-=========================== short test summary info ===========================
-FAILED test_utils.py::test_security_ping_host - ValueError: Invalid host name
-========================= 1 failed, 1 passed in 4.22s =========================
-!!! CRITICAL FAILURE AT src\utils.py. HALTING PIPELINE FOR THIS PROJECT.
+def ping_host(host: str):
+    """Ping a host to check its availability."""
+    # Validate the host input to allow only valid IP addresses or hostnames
+    if not re.match(r'^(?:[a-zA-Z0-9-]+\.)*[a-zA-Z0-9-]+$', host) and not re.match(r'^\d{1,3}(\.\d{1,3}){3}$', host):
+        raise ValueError("Invalid host input")
+    try:
+        # Use subprocess.run with a list to avoid shell injection
+        result = subprocess.run(['ping', '-n', '1', host], capture_output=True, text=True, check=True)
+        return result.returncode
+    except subprocess.CalledProcessError:
+        return 1
 
-===========================================================================
-PROJECT: project_003_path_traversal
-TOPOLOGY: ['src\\db.py', 'src\\utils.py', 'src\\__init__.py', 'src\\api.py']
-===========================================================================
+------------------------------------------------------------
 
->>> TARGETING LAYER: src\db.py
-Generating dynamic tests for db.py...
---- 正在调用 AI 生成测试用例 (Functional + Security Fuzzing) ---
-STATUS: [SECURE]
+✅ RESULT: [PASSED] Passed All Guardrails
+🔍 EXPLANATION (为什么通过): 补丁代码语法正确，且成功通过了 Pytest 所有的业务逻辑测试（Functional Tests）与安全攻击测试（Security Fuzzing Tests）。这证明漏洞已被安全闭合，且未引发功能退化（Regression）。
 
->>> TARGETING LAYER: src\utils.py
-Generating dynamic tests for utils.py...
---- 正在调用 AI 生成测试用例 (Functional + Security Fuzzing) ---
-STATUS: [SECURE]
+--- 📝 DETAILED TEST RESULTS (SUCCESS) ---
+============================= test session starts =============================
+platform win32 -- Python 3.13.13, pytest-9.0.2, pluggy-1.6.0 -- C:\Users\11855\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\11855\Desktop\language based security\project\dataset\project_002_cmdi
+plugins: anyio-4.12.0
+collecting ... collected 6 items
 
->>> TARGETING LAYER: src\__init__.py
-Generating dynamic tests for __init__.py...
---- 正在调用 AI 生成测试用例 (Functional + Security Fuzzing) ---
-STATUS: [SECURE]
+src/test_utils.py::test_functional_valid_hostname PASSED                 [ 16%]
+src/test_utils.py::test_functional_valid_ip PASSED                       [ 33%]
+src/test_utils.py::test_functional_unreachable_host PASSED               [ 50%]
+src/test_utils.py::test_security_sql_injection PASSED                    [ 66%]
+src/test_utils.py::test_security_command_injection PASSED                [ 83%]
+src/test_utils.py::test_security_invalid_characters PASSED               [100%]
+
+============================== 6 passed in 0.74s ==============================
+------------------------------------------------------------
 
 >>> TARGETING LAYER: src\api.py
 Generating dynamic tests for api.py...
 --- 正在调用 AI 生成测试用例 (Functional + Security Fuzzing) ---
-STATUS: [SECURE]
+STATUS: [SECURE] No vulnerabilities detected by scanner.
+--- RUNNING BASELINE TESTS FOR api.py ---
+BASELINE TEST: [PASSED] Functional logic verified.
+--- TEST DETAILS ---
+plugins: anyio-4.12.0
+collecting ... collected 5 items
+
+src/test_api.py::test_functional_handle_ping_request_success PASSED      [ 20%]
+src/test_api.py::test_functional_handle_ping_request_no_host PASSED      [ 40%]
+src/test_api.py::test_security_handle_ping_request_sql_injection PASSED  [ 60%]
+src/test_api.py::test_security_handle_ping_request_command_injection PASSED [ 80%]
+src/test_api.py::test_security_handle_ping_request_xss_attack PASSED     [100%]
+
+============================== 5 passed in 0.10s ==============================
+
+
+===========================================================================
+PROJECT: project_003_path_traversal
+TOPOLOGY: ['src\\db.py', 'src\\utils.py', 'src\\api.py']
+===========================================================================
+
+>>> TARGETING LAYER: src\db.py
+Generating dynamic tests for db.py...
+--- 正在调用 AI 生成测试用例 (Functional + Security Fuzzing) ---
+STATUS: [SECURE] No vulnerabilities detected by scanner.
+--- RUNNING BASELINE TESTS FOR db.py ---
+BASELINE TEST: [WARNING] Some tests failed, but file remains structurally secure.
+--- TEST DETAILS ---
+E       AttributeError: property 'parent' of 'WindowsPath' object has no setter
+
+src\test_db.py:16: AttributeError
+=========================== short test summary info ===========================
+ERROR src/test_db.py::test_functional_read_log_file - AttributeError: propert...
+ERROR src/test_db.py::test_functional_read_log_file_nonexistent - AttributeEr...
+ERROR src/test_db.py::test_security_read_log_file_sqli - AttributeError: prop...
+ERROR src/test_db.py::test_security_read_log_file_path_traversal - AttributeE...
+ERROR src/test_db.py::test_security_read_log_file_command_injection - Attribu...
+============================== 5 errors in 0.26s ==============================
+
+
+>>> TARGETING LAYER: src\utils.py
+Generating dynamic tests for utils.py...
+--- 正在调用 AI 生成测试用例 (Functional + Security Fuzzing) ---
+STATUS: [SECURE] No vulnerabilities detected by scanner.
+--- RUNNING BASELINE TESTS FOR utils.py ---
+BASELINE TEST: [WARNING] Some tests failed, but file remains structurally secure.
+--- TEST DETAILS ---
+>       with pytest.raises(Exception):
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'Exception'>
+
+src\test_utils.py:33: Failed
+=========================== short test summary info ===========================
+FAILED src/test_utils.py::test_security_format_download_response_with_sql_injection
+FAILED src/test_utils.py::test_security_format_download_response_with_command_injection
+FAILED src/test_utils.py::test_security_format_download_response_with_script_injection
+========================= 3 failed, 3 passed in 0.25s =========================
+
+
+>>> TARGETING LAYER: src\api.py
+Generating dynamic tests for api.py...
+--- 正在调用 AI 生成测试用例 (Functional + Security Fuzzing) ---
+STATUS: [SECURE] No vulnerabilities detected by scanner.
+--- RUNNING BASELINE TESTS FOR api.py ---
+BASELINE TEST: [PASSED] Functional logic verified.
+--- TEST DETAILS ---
+plugins: anyio-4.12.0
+collecting ... collected 5 items
+
+src/test_api.py::test_functional_handle_download_log_request PASSED      [ 20%]
+src/test_api.py::test_functional_handle_download_log_request_no_filename PASSED [ 40%]
+src/test_api.py::test_security_handle_download_log_request[malicious_payload0] PASSED [ 60%]
+src/test_api.py::test_security_handle_download_log_request[malicious_payload1] PASSED [ 80%]
+src/test_api.py::test_security_handle_download_log_request[malicious_payload2] PASSED [100%]
+
+============================== 5 passed in 0.07s ==============================
+

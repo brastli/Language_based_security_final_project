@@ -13,29 +13,29 @@ if not api_key:
 
 client = OpenAI(api_key=api_key)
 
-def generate_test_for_file(vuln_code, file_name="module.py"):
+def generate_test_for_file(vuln_code, rel_file_path="module.py"):
     """
     针对给定的源代码自动生成 pytest 脚本。
-    增加 file_name 参数，用于防止大模型产生 import 幻觉。
+    接收相对路径 rel_file_path（如 'src/db.py'），转换为标准 Python 包路径（'src.db'）。
     """
-    # 提取模块名 (例如 'db.py' -> 'db')
-    module_name = os.path.basename(file_name).replace('.py', '')
+    # 将文件路径转换为 Python 模块路径 (例如 'src/db.py' -> 'src.db')
+    module_path = rel_file_path.replace('\\', '/').replace('.py', '').replace('/', '.')
     
     prompt = f"""
     You are an Expert QA and Security Engineer. Your task is to write a comprehensive `pytest` script for the following Python code.
     
     CRITICAL IMPORT RULE:
-    The code provided resides in a file named `{file_name}`. 
-    You MUST import the functions you are testing directly from `{module_name}`.
-    DO NOT use placeholders like 'your_module'.
-    Example: `from {module_name} import [function_name]`
+    You MUST import the functions you are testing directly from `{module_path}`.
+    DO NOT use placeholders like 'your_module' or just the file name.
+    Example: `from {module_path} import [function_name]`
     
     CRITICAL REQUIREMENT - You MUST write TWO categories of tests:
     1. Functional Tests (methods starting with `test_functional_`): Verify the normal business logic with valid, expected inputs.
-    2. Security Fuzzing Tests (methods starting with `test_security_`): Generate malicious payloads. Since the patched function might raise an Exception (like ValueError) when encountering malicious payloads, you MUST use a `with pytest.raises(Exception):` block around the function call to catch expected security rejections.
+    2. Security Fuzzing Tests (methods starting with `test_security_`): Generate at least 3 malicious payloads relevant to the code (e.g., SQLi strings, Command Injection characters). Since the patched function might raise an Exception (like ValueError) when encountering malicious payloads, you MUST use a `with pytest.raises(Exception):` block around the function call to catch expected security rejections.
+
     STRICT OUTPUT RULES:
     - Output ONLY the valid Python code. 
-    - NO markdown formatting (e.g., no ```python).
+    - NO markdown formatting.
     - Ensure all necessary imports (including pytest) are included.
     
     Code to test:
@@ -47,18 +47,16 @@ def generate_test_for_file(vuln_code, file_name="module.py"):
         response = client.chat.completions.create(
             model="gpt-4o",
             messages=[
-                {"role": "system", "content": "You are a professional security testing assistant. You output clean, executable Python code."},
+                {"role": "system", "content": "You output clean, executable Python code."},
                 {"role": "user", "content": prompt}
             ],
-            temperature=0.2  # 保持低随机性
+            temperature=0.2 
         )
         
         content = response.choices[0].message.content.strip()
         
-        # 清洗 Markdown 标记
-        content = re.sub(r"^```python\n", "", content)
-        content = re.sub(r"^```\n", "", content)
-        content = re.sub(r"```$", "", content).strip()
+        # 暴力清洗 Markdown 标记，确保绝不会出现 SyntaxError
+        content = content.replace("```python", "").replace("```", "").strip()
         
         return content
 
@@ -67,5 +65,4 @@ def generate_test_for_file(vuln_code, file_name="module.py"):
         return None
 
 if __name__ == "__main__":
-    # 简单测试入口
     pass

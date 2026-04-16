@@ -1,34 +1,34 @@
 import pytest
-from utils import format_download_response
+from src.utils import format_download_response
 
 # Functional Tests
 def test_functional_format_download_response_with_string():
-    content = "Sample content"
-    expected = {'content': "Sample content"}
+    content = "This is a test string."
+    expected = {'content': "This is a test string."}
     assert format_download_response(content) == expected
 
-def test_functional_format_download_response_with_empty_string():
-    content = ""
-    expected = {'content': ""}
+def test_functional_format_download_response_with_number():
+    content = 12345
+    expected = {'content': 12345}
     assert format_download_response(content) == expected
 
-def test_functional_format_download_response_with_special_characters():
-    content = "!@#$%^&*()_+"
-    expected = {'content': "!@#$%^&*()_+"}
+def test_functional_format_download_response_with_list():
+    content = [1, 2, 3, 4, 5]
+    expected = {'content': [1, 2, 3, 4, 5]}
     assert format_download_response(content) == expected
 
 # Security Fuzzing Tests
 def test_security_format_download_response_with_sql_injection():
-    malicious_content = "1; DROP TABLE users"
-    response = format_download_response(malicious_content)
-    assert response == {'content': malicious_content}
+    malicious_payload = "1; DROP TABLE users"
+    with pytest.raises(Exception):
+        format_download_response(malicious_payload)
 
 def test_security_format_download_response_with_command_injection():
-    malicious_content = "echo 'malicious code'"
-    response = format_download_response(malicious_content)
-    assert response == {'content': malicious_content}
+    malicious_payload = "some_value; rm -rf /"
+    with pytest.raises(Exception):
+        format_download_response(malicious_payload)
 
-def test_security_format_download_response_with_path_traversal():
-    malicious_content = "../../etc/passwd"
-    response = format_download_response(malicious_content)
-    assert response == {'content': malicious_content}
+def test_security_format_download_response_with_script_injection():
+    malicious_payload = "<script>alert('Hacked!')</script>"
+    with pytest.raises(Exception):
+        format_download_response(malicious_payload)

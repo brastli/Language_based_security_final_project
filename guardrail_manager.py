@@ -1,9 +1,10 @@
 import subprocess
 import os
 
-def verify_patch(file_path, cwe_id, fixed_code, test_file_path):
+def verify_patch(file_path, cwe_id, fixed_code, test_file_path, project_path):
     """
     静默执行 Pytest，验证修补后的代码。
+    强制将工作目录(cwd)锁定为 project_path，保证所有包导入路径正确。
     """
     # 1. 语法树检查 (基础护栏)
     try:
@@ -15,27 +16,26 @@ def verify_patch(file_path, cwe_id, fixed_code, test_file_path):
     with open(file_path, "w", encoding="utf-8") as f:
         f.write(fixed_code)
 
-    # 获取测试文件所在的目录和文件名
-    test_dir = os.path.dirname(test_file_path)
-    test_filename = os.path.basename(test_file_path)
-
     # 3. 运行 Pytest 功能与安全 Fuzzing 护栏
     try:
-        # 添加 cwd=test_dir，让 pytest 在目标目录 (如 src/) 下运行
-        # 这样确保测试代码里的 from db import xxx 可以成功找到同级目录的 db.py
+        abs_test_path = os.path.abspath(test_file_path)
+        abs_project_path = os.path.abspath(project_path)
+
         result = subprocess.run(
-            ["python", "-m", "pytest", test_filename, "-v"],
+            ["python", "-m", "pytest", abs_test_path, "-v"],
             capture_output=True,
             text=True,
             timeout=30,
-            cwd=test_dir if test_dir else None
+            cwd=abs_project_path  # 绝对锁定根目录
         )
         
+        # 【修改点】：无论成功还是失败，都捕获并返回完整的 stdout/stderr 日志
+        full_log = result.stdout + result.stderr
+
         if result.returncode == 0:
-            return True, "Passed All Guardrails", {"test_report": ""}
+            return True, "Passed All Guardrails", {"test_report": full_log}
         else:
-            # 提取报错信息
-            return False, "Guardrail Rejected: Test Failed", {"test_report": result.stdout + result.stderr}
+            return False, "Guardrail Rejected: Test Failed", {"test_report": full_log}
             
     except subprocess.TimeoutExpired:
         return False, "Guardrail Rejected: Execution Timeout", {"test_report": "Infinite loop or timeout detected."}

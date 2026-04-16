@@ -1,5 +1,5 @@
 import pytest
-from utils import normalize_username
+from src.utils import normalize_username
 
 # Functional Tests
 def test_functional_normalize_username_with_spaces():
@@ -19,13 +19,13 @@ def test_functional_normalize_username_empty_string():
 
 # Security Fuzzing Tests
 def test_security_normalize_username_sql_injection():
-    malicious_input = "user'; DROP TABLE users; --"
-    assert normalize_username(malicious_input) == malicious_input.strip()
+    with pytest.raises(Exception):
+        normalize_username("'; DROP TABLE users; --")
 
 def test_security_normalize_username_command_injection():
-    malicious_input = "user && rm -rf /"
-    assert normalize_username(malicious_input) == malicious_input.strip()
+    with pytest.raises(Exception):
+        normalize_username("user; rm -rf /")
 
-def test_security_normalize_username_path_traversal():
-    malicious_input = "../etc/passwd"
-    assert normalize_username(malicious_input) == malicious_input.strip()
+def test_security_normalize_username_html_injection():
+    with pytest.raises(Exception):
+        normalize_username("<script>alert('hack');</script>")

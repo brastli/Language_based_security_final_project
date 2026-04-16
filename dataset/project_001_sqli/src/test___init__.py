@@ -1,45 +1,38 @@
-# Assuming the following code is in __init__.py
+# Assuming the code to test is as follows and is located in src/__init__.py
 
-def process_input(user_input):
-    """
-    Processes the input string by reversing it and converting to uppercase.
-    """
-    if not isinstance(user_input, str):
+def process_input(data):
+    if not isinstance(data, str):
         raise ValueError("Input must be a string")
-    return user_input[::-1].upper()
-```
+    if "DROP" in data.upper() or ";" in data:
+        raise ValueError("Potential SQL Injection detected")
+    return data.strip().lower()
 
-```python
-# pytest script for testing the code in __init__.py
+
+
+# pytest script for testing the above code
 
 import pytest
-from __init__ import process_input
+from src.__init__ import process_input
 
 # Functional Tests
 def test_functional_valid_string():
-    assert process_input("hello") == "OLLEH"
+    assert process_input("  Hello World  ") == "hello world"
 
 def test_functional_empty_string():
     assert process_input("") == ""
 
-def test_functional_numeric_string():
-    assert process_input("12345") == "54321"
-
-def test_functional_mixed_case_string():
-    assert process_input("HeLLo") == "OLLEh"
+def test_functional_no_whitespace():
+    assert process_input("Python") == "python"
 
 # Security Fuzzing Tests
-def test_security_sql_injection():
-    malicious_input = "'; DROP TABLE users; --"
-    result = process_input(malicious_input)
-    assert result == malicious_input[::-1].upper()
+def test_security_sql_injection_uppercase():
+    with pytest.raises(ValueError):
+        process_input("SELECT * FROM users; DROP TABLE users;")
+
+def test_security_sql_injection_lowercase():
+    with pytest.raises(ValueError):
+        process_input("select * from users; drop table users;")
 
 def test_security_command_injection():
-    malicious_input = "&& rm -rf /"
-    result = process_input(malicious_input)
-    assert result == malicious_input[::-1].upper()
-
-def test_security_path_traversal():
-    malicious_input = "../../etc/passwd"
-    result = process_input(malicious_input)
-    assert result == malicious_input[::-1].upper()
+    with pytest.raises(ValueError):
+        process_input("echo 'Hello'; rm -rf /")

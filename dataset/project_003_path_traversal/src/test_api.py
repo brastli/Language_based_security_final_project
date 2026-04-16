@@ -1,92 +1,55 @@
 import pytest
+from src.api import handle_download_log_request
 from unittest.mock import patch
-from api import handle_download_log_request
 
-# Mock functions from db and utils
-@pytest.fixture
-def mock_read_log_file():
-    with patch('api.read_log_file') as mock:
-        yield mock
-
-@pytest.fixture
-def mock_format_download_response():
-    with patch('api.format_download_response') as mock:
-        yield mock
-
-# Functional Tests
-def test_functional_handle_download_log_request_valid_filename(mock_read_log_file, mock_format_download_response):
+# Mocking the dependencies
+@patch('src.api.read_log_file')
+@patch('src.api.format_download_response')
+def test_functional_handle_download_log_request(mock_format_download_response, mock_read_log_file):
+    # Setup
     mock_read_log_file.return_value = "log content"
     mock_format_download_response.return_value = "formatted response"
     
-    request_data = {'filename': 'valid_log.txt'}
+    # Test input
+    request_data = {'filename': 'log.txt'}
+    
+    # Execute
     response = handle_download_log_request(request_data)
     
-    mock_read_log_file.assert_called_once_with('valid_log.txt')
+    # Verify
+    mock_read_log_file.assert_called_once_with('log.txt')
     mock_format_download_response.assert_called_once_with("log content")
     assert response == "formatted response"
 
-def test_functional_handle_download_log_request_missing_filename(mock_read_log_file, mock_format_download_response):
+@patch('src.api.read_log_file')
+@patch('src.api.format_download_response')
+def test_functional_handle_download_log_request_no_filename(mock_format_download_response, mock_read_log_file):
+    # Setup
     mock_read_log_file.return_value = "log content"
     mock_format_download_response.return_value = "formatted response"
     
+    # Test input
     request_data = {}
+    
+    # Execute
     response = handle_download_log_request(request_data)
     
+    # Verify
     mock_read_log_file.assert_called_once_with('')
     mock_format_download_response.assert_called_once_with("log content")
     assert response == "formatted response"
 
-# Security Fuzzing Tests
-def test_security_handle_download_log_request_sql_injection(mock_read_log_file, mock_format_download_response):
-    mock_read_log_file.return_value = "log content"
-    mock_format_download_response.return_value = "formatted response"
+@pytest.mark.parametrize("malicious_payload", [
+    {"filename": "log.txt; rm -rf /"},  # Command Injection
+    {"filename": "' OR '1'='1"},        # SQL Injection
+    {"filename": "<script>alert(1)</script>"},  # XSS
+])
+@patch('src.api.read_log_file')
+@patch('src.api.format_download_response')
+def test_security_handle_download_log_request(mock_format_download_response, mock_read_log_file, malicious_payload):
+    # Setup
+    mock_read_log_file.side_effect = ValueError("Invalid filename")
     
-    malicious_payloads = [
-        "' OR '1'='1",
-        "'; DROP TABLE logs; --",
-        "' UNION SELECT * FROM users --"
-    ]
-    
-    for payload in malicious_payloads:
-        request_data = {'filename': payload}
-        response = handle_download_log_request(request_data)
-        
-        mock_read_log_file.assert_called_with(payload)
-        mock_format_download_response.assert_called_with("log content")
-        assert response == "formatted response"
-
-def test_security_handle_download_log_request_command_injection(mock_read_log_file, mock_format_download_response):
-    mock_read_log_file.return_value = "log content"
-    mock_format_download_response.return_value = "formatted response"
-    
-    malicious_payloads = [
-        'log.txt; rm -rf /',
-        'log.txt && echo "hacked"',
-        'log.txt | cat /etc/passwd'
-    ]
-    
-    for payload in malicious_payloads:
-        request_data = {'filename': payload}
-        response = handle_download_log_request(request_data)
-        
-        mock_read_log_file.assert_called_with(payload)
-        mock_format_download_response.assert_called_with("log content")
-        assert response == "formatted response"
-
-def test_security_handle_download_log_request_path_traversal(mock_read_log_file, mock_format_download_response):
-    mock_read_log_file.return_value = "log content"
-    mock_format_download_response.return_value = "formatted response"
-    
-    malicious_payloads = [
-        '../etc/passwd',
-        '../../var/log/syslog',
-        '/absolute/path/to/secret'
-    ]
-    
-    for payload in malicious_payloads:
-        request_data = {'filename': payload}
-        response = handle_download_log_request(request_data)
-        
-        mock_read_log_file.assert_called_with(payload)
-        mock_format_download_response.assert_called_with("log content")
-        assert response == "formatted response"
+    # Execute & Verify
+    with pytest.raises(Exception):
+        handle_download_log_request(malicious_payload)

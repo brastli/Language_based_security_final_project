@@ -1,20 +1,28 @@
 import pytest
-from db import get_user_by_name
+from src.db import get_user_by_name
 
-def test_functional_get_user_by_name_valid_user():
+# Functional Tests
+def test_functional_valid_username():
     assert get_user_by_name('admin') == 'super_secret_password'
 
-def test_functional_get_user_by_name_invalid_user():
-    assert get_user_by_name('nonexistent') is None
+def test_functional_invalid_username():
+    assert get_user_by_name('nonexistent_user') is None
 
-def test_security_get_user_by_name_sql_injection_1():
-    payload = "' OR '1'='1"
-    assert get_user_by_name(payload) is None
+def test_functional_empty_username():
+    assert get_user_by_name('') is None
 
-def test_security_get_user_by_name_sql_injection_2():
-    payload = "'; DROP TABLE users; --"
-    assert get_user_by_name(payload) is None
+# Security Fuzzing Tests
+def test_security_sql_injection_1():
+    malicious_input = "' OR '1'='1"
+    with pytest.raises(Exception):
+        get_user_by_name(malicious_input)
 
-def test_security_get_user_by_name_sql_injection_3():
-    payload = "' UNION SELECT null, null, null --"
-    assert get_user_by_name(payload) is None
+def test_security_sql_injection_2():
+    malicious_input = "'; DROP TABLE users; --"
+    with pytest.raises(Exception):
+        get_user_by_name(malicious_input)
+
+def test_security_sql_injection_3():
+    malicious_input = "' UNION SELECT null, null, null --"
+    with pytest.raises(Exception):
+        get_user_by_name(malicious_input)

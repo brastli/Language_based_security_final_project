@@ -1,29 +1,29 @@
 import pytest
+from src.api import handle_login_request
 from unittest.mock import patch
-from api import handle_login_request
 
 # Mocking the dependencies
 @pytest.fixture
 def mock_get_user_by_name():
-    with patch('api.get_user_by_name') as mock:
+    with patch('src.api.get_user_by_name') as mock:
         yield mock
 
 @pytest.fixture
 def mock_normalize_username():
-    with patch('api.normalize_username') as mock:
+    with patch('src.api.normalize_username') as mock:
         yield mock
 
 # Functional Tests
 def test_functional_handle_login_request_valid_user(mock_get_user_by_name, mock_normalize_username):
     mock_normalize_username.return_value = 'validuser'
-    mock_get_user_by_name.return_value = {'username': 'validuser', 'id': 1}
+    mock_get_user_by_name.return_value = {'id': 1, 'username': 'validuser'}
 
     request_data = {'username': 'ValidUser'}
     result = handle_login_request(request_data)
 
     mock_normalize_username.assert_called_once_with('ValidUser')
     mock_get_user_by_name.assert_called_once_with('validuser')
-    assert result == {'username': 'validuser', 'id': 1}
+    assert result == {'id': 1, 'username': 'validuser'}
 
 def test_functional_handle_login_request_missing_username(mock_get_user_by_name, mock_normalize_username):
     mock_normalize_username.return_value = ''
@@ -38,37 +38,34 @@ def test_functional_handle_login_request_missing_username(mock_get_user_by_name,
 
 # Security Fuzzing Tests
 def test_security_handle_login_request_sql_injection(mock_get_user_by_name, mock_normalize_username):
-    malicious_input = "'; DROP TABLE users; --"
-    mock_normalize_username.return_value = malicious_input
-    mock_get_user_by_name.return_value = None
+    malicious_payloads = [
+        "' OR '1'='1",
+        "'; DROP TABLE users; --",
+        "' UNION SELECT * FROM users --"
+    ]
 
-    request_data = {'username': malicious_input}
-    result = handle_login_request(request_data)
-
-    mock_normalize_username.assert_called_once_with(malicious_input)
-    mock_get_user_by_name.assert_called_once_with(malicious_input)
-    assert result is None
+    for payload in malicious_payloads:
+        with pytest.raises(Exception):
+            handle_login_request({'username': payload})
 
 def test_security_handle_login_request_command_injection(mock_get_user_by_name, mock_normalize_username):
-    malicious_input = "validuser; rm -rf /"
-    mock_normalize_username.return_value = malicious_input
-    mock_get_user_by_name.return_value = None
+    malicious_payloads = [
+        '$(rm -rf /)',
+        '`ls -la`',
+        '; shutdown -h now'
+    ]
 
-    request_data = {'username': malicious_input}
-    result = handle_login_request(request_data)
+    for payload in malicious_payloads:
+        with pytest.raises(Exception):
+            handle_login_request({'username': payload})
 
-    mock_normalize_username.assert_called_once_with(malicious_input)
-    mock_get_user_by_name.assert_called_once_with(malicious_input)
-    assert result is None
+def test_security_handle_login_request_xss_injection(mock_get_user_by_name, mock_normalize_username):
+    malicious_payloads = [
+        '<script>alert(1)</script>',
+        '"><img src=x onerror=alert(1)>',
+        '<svg/onload=alert(1)>'
+    ]
 
-def test_security_handle_login_request_path_traversal(mock_get_user_by_name, mock_normalize_username):
-    malicious_input = "../etc/passwd"
-    mock_normalize_username.return_value = malicious_input
-    mock_get_user_by_name.return_value = None
-
-    request_data = {'username': malicious_input}
-    result = handle_login_request(request_data)
-
-    mock_normalize_username.assert_called_once_with(malicious_input)
-    mock_get_user_by_name.assert_called_once_with(malicious_input)
-    assert result is None
+    for payload in malicious_payloads:
+        with pytest.raises(Exception):
+            handle_login_request({'username': payload})
