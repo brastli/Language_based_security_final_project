@@ -13,36 +13,19 @@ class DefUseVisitor(ast.NodeVisitor):
                     self.vulnerable_vars.add(child.id)
             self.dependency_lines.add(node.lineno)
         elif isinstance(node, ast.Assign):
-            for target in node.targets:
-                if isinstance(target, ast.Name) and target.id in self.vulnerable_vars:
+            for t in node.targets:
+                if isinstance(t, ast.Name) and t.id in self.vulnerable_vars:
                     self.dependency_lines.add(node.lineno)
         self.generic_visit(node)
 
 def get_function_and_flow(filename, line_no):
-    """提取带有数据流注释的代码及自然语言事实"""
-    with open(filename, "r", encoding="utf-8") as f:
-        source_code = f.read()
-    
+    with open(filename, "r", encoding="utf-8") as f: source_code = f.read()
     tree = ast.parse(source_code)
-    source_lines = source_code.splitlines()
-    
+    lines = source_code.splitlines()
     for node in ast.walk(tree):
-        if isinstance(node, ast.FunctionDef):
-            if node.lineno <= line_no <= node.end_lineno:
-                visitor = DefUseVisitor(line_no)
-                visitor.visit(node)
-                
-                sliced_code = []
-                for i in range(node.lineno - 1, node.end_lineno):
-                    curr_line = i + 1
-                    line_text = source_lines[i]
-                    if curr_line == line_no:
-                        sliced_code.append(f"{line_text}  # <--- [VULNERABILITY SINK]")
-                    elif curr_line in visitor.dependency_lines:
-                        sliced_code.append(f"{line_text}  # <--- [DATA FLOW: DEFINITION]")
-                    else:
-                        sliced_code.append(line_text)
-                
-                fact = f"Vulnerability at line {line_no} is driven by variables {visitor.vulnerable_vars}, defined at lines {list(visitor.dependency_lines)}."
-                return "\n".join(sliced_code), fact
-    return None, "No specific data flow facts identified."
+        if isinstance(node, ast.FunctionDef) and node.lineno <= line_no <= node.end_lineno:
+            v = DefUseVisitor(line_no); v.visit(node)
+            sliced = [lines[i] + (" # <--- SINK" if i+1==line_no else " # <--- DEP" if i+1 in v.dependency_lines else "") for i in range(node.lineno-1, node.end_lineno)]
+            fact = f"Vars {v.vulnerable_vars} flow into sink at line {line_no} from lines {list(v.dependency_lines)}."
+            return "\n".join(sliced), fact
+    return None, ""
