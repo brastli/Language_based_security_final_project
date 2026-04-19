@@ -10,7 +10,7 @@ from repairer import request_repair
 from guardrail_manager import verify_patch
 
 class RepositoryAnalyzer:
-    """利用 AST 递归解析项目文件依赖，并动态生成拓扑修复序列"""
+    """Parse intra-project imports with AST and emit a bottom-up repair order."""
     
     @staticmethod
     def get_dependencies(file_path, all_py_files):
@@ -39,7 +39,7 @@ class RepositoryAnalyzer:
         for root, dirs, filenames in os.walk(project_path):
             dirs[:] = [d for d in dirs if d not in ['tests', '.pytest_cache', '__pycache__', 'venv', 'logs']]
             for f in filenames:
-                # 忽略 __init__.py 防止大模型产生虚假测试幻觉
+                # Skip __init__.py to avoid meaningless generated tests
                 if f.endswith('.py') and not f.startswith('test_') and f != '__init__.py':
                     rel_path = os.path.relpath(os.path.join(root, f), project_path)
                     files.append(rel_path)
@@ -160,9 +160,7 @@ def run_project_pipeline(project_path):
             print(f"\n[ATTEMPT {attempt}/{MAX_RETRIES}] Repairing CWE-{cwe_id}...")
             reasoning, fixed_code = request_repair(cwe_id, func_code, data_flow_fact, previous_error)
             
-            # ==========================================
-            # 【新增展示】：打印 AI 的策略与修改后的代码
-            # ==========================================
+            # --- Verbose output: strategy + patched slice ---
             print(f"\n--- 💡 AI REPAIR STRATEGY ---")
             print(reasoning)
             print(f"\n--- 🛠️ GENERATED PATCH CODE ---")
@@ -171,16 +169,15 @@ def run_project_pipeline(project_path):
 
             success, msg, repair_log = verify_patch(file_path, cwe_id, fixed_code, test_file_path, project_path)
             
-            # ==========================================
-            # 【新增展示】：详细解释与全量测试日志
-            # ==========================================
             if success:
                 print(f"\n✅ RESULT: [PASSED] {msg}")
-                print("🔍 EXPLANATION (为什么通过): 补丁代码语法正确，且成功通过了 Pytest 所有的业务逻辑测试（Functional Tests）与安全攻击测试（Security Fuzzing Tests）。这证明漏洞已被安全闭合，且未引发功能退化（Regression）。")
-                
+                print(
+                    "🔍 EXPLANATION (pass): Patch compiles and pytest functional + "
+                    "security fuzz tests passed; vulnerability closed without obvious regression."
+                )
+
                 if repair_log and repair_log.get('test_report'):
                     print("\n--- 📝 DETAILED TEST RESULTS (SUCCESS) ---")
-                    # 为了美观，截取完整的测试摘要（通常包含每一项 passed 的输出）
                     print(repair_log['test_report'].strip())
                     print("-" * 60)
                     
@@ -188,12 +185,14 @@ def run_project_pipeline(project_path):
                 break
             else:
                 print(f"\n❌ RESULT: [REJECTED] {msg}")
-                print("🔍 EXPLANATION (为什么被拦截): 护栏拦截了此补丁。可能的原因是：1) 补丁引入了语法错误；2) 破坏了原有的正常业务逻辑 (Functional Test Failed)；3) 防御代码不完善，仍能被 Fuzzing 攻击载荷绕过 (Security Test Failed)。")
-                
+                print(
+                    "🔍 EXPLANATION (reject): Guardrails blocked this patch — possible syntax error, "
+                    "functional regression, or security tests still accepting unsafe behavior."
+                )
+
                 if repair_log and repair_log.get('test_report'):
                     print("\n--- 🚨 DETAILED ERROR LOG (FAILURE) ---")
                     error_lines = repair_log['test_report'].strip().splitlines()
-                    # 打印最后20行错误日志，展示具体的 Failed Assertions
                     error_tail = "\n".join(error_lines[-20:]) if len(error_lines) > 20 else "\n".join(error_lines)
                     print(error_tail)
                     print("-" * 60)

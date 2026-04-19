@@ -1,24 +1,20 @@
 import os
-import re
 from openai import OpenAI
 from dotenv import load_dotenv
 
-# 加载项目根目录下的 .env 文件
 load_dotenv()
 
-# 初始化 OpenAI 客户端
 api_key = os.getenv("OPENAI_API_KEY")
 if not api_key:
-    raise ValueError("未找到 OPENAI_API_KEY。请在 .env 文件中配置或设置环境变量。")
+    raise ValueError("OPENAI_API_KEY missing; set it in .env or the environment.")
 
 client = OpenAI(api_key=api_key)
 
-def generate_test_for_file(vuln_code, rel_file_path="module.py"):
+def generate_test_for_file(vuln_code, rel_file_path="module.py", quiet=False):
     """
-    针对给定的源代码自动生成 pytest 脚本。
-    接收相对路径 rel_file_path（如 'src/db.py'），转换为标准 Python 包路径（'src.db'）。
+    Generate a pytest module for vuln_code.
+    rel_file_path (e.g. 'src/db.py') becomes import path 'src.db'.
     """
-    # 将文件路径转换为 Python 模块路径 (例如 'src/db.py' -> 'src.db')
     module_path = rel_file_path.replace('\\', '/').replace('.py', '').replace('/', '.')
     
     prompt = f"""
@@ -43,9 +39,10 @@ def generate_test_for_file(vuln_code, rel_file_path="module.py"):
     """
     
     try:
-        print("--- 正在调用 AI 生成测试用例 (Functional + Security Fuzzing) ---")
+        if not quiet:
+            print("Generating pytest (functional + security) via LLM...")
         response = client.chat.completions.create(
-            model="gpt-4o",
+            model="gpt-5.4-mini",
             messages=[
                 {"role": "system", "content": "You output clean, executable Python code."},
                 {"role": "user", "content": prompt}
@@ -55,13 +52,13 @@ def generate_test_for_file(vuln_code, rel_file_path="module.py"):
         
         content = response.choices[0].message.content.strip()
         
-        # 暴力清洗 Markdown 标记，确保绝不会出现 SyntaxError
+        # Strip markdown fences so the result is valid Python
         content = content.replace("```python", "").replace("```", "").strip()
         
         return content
 
     except Exception as e:
-        print(f"生成测试用例失败: {e}")
+        print(f"Test generation failed: {e}")
         return None
 
 if __name__ == "__main__":
