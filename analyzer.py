@@ -3,7 +3,7 @@ import ast
 from collections import defaultdict, deque
 
 def extract_local_imports(file_path, base_dir):
-    """通过 AST 解析文件，提取其对同项目内其他文件的依赖 (支持 import 和 from import)"""
+    """Parse a file with AST and list same-project .py dependencies (import and from ... import)."""
     with open(file_path, 'r', encoding='utf-8') as f:
         try:
             tree = ast.parse(f.read())
@@ -12,26 +12,24 @@ def extract_local_imports(file_path, base_dir):
 
     imports = []
     
-    # 辅助函数：尝试将模块名转换为绝对路径并检查是否存在
     def add_if_local(module_name):
         if not module_name: return
         parts = module_name.split('.')
-        if parts[0] == 'src': # 剔除 src 前缀
+        if parts[0] == 'src':  # drop package root label when resolving paths
             parts = parts[1:]
         potential_path = os.path.normpath(os.path.join(base_dir, *parts) + '.py')
         if os.path.exists(potential_path):
             imports.append(potential_path)
 
     for node in ast.walk(tree):
-        # 处理 `from X import Y` 或 `from . import Y`
+        # `from X import Y` or relative `from . import Y`
         if isinstance(node, ast.ImportFrom):
             if node.module:
                 add_if_local(node.module)
-            elif node.level > 0: # 处理 from . import utils
+            elif node.level > 0:
                 for alias in node.names:
                     add_if_local(alias.name)
         
-        # 处理 `import X`
         elif isinstance(node, ast.Import):
             for alias in node.names:
                 add_if_local(alias.name)
@@ -39,7 +37,7 @@ def extract_local_imports(file_path, base_dir):
     return imports
 
 def get_repair_order(src_dir):
-    """基于拓扑排序计算自底向上的修复序列"""
+    """Topological order: repair dependencies before dependents (bottom-up)."""
     graph = defaultdict(list)
     in_degree = defaultdict(int)
     
@@ -70,7 +68,7 @@ def get_repair_order(src_dir):
             if in_degree[neighbor] == 0:
                 queue.append(neighbor)
 
-    # 兜底：处理可能的循环依赖或未排序文件
+    # Append any leftovers (cycles or unresolved edges)
     for f in files:
         if f not in repair_order:
             repair_order.append(f)
