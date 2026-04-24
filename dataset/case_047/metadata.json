@@ -1,0 +1,11 @@
+{
+  "case_id": "case_047",
+  "cwe": "CWE-259",
+  "bandit_rule": "B105",
+  "source": "SecurityEval",
+  "securityeval_id": "CWE-454_author_1.py",
+  "vuln_line": 11,
+  "vulnerable_function": "admin_access",
+  "vulnerability_type": "hardcoded_password_string",
+  "description": "HAS_ADMIN_ACCESS = False def admin_access(request): ''' Read the username and password from the request validate the username and password for admin access. Flag that the user has admin access. '''"
+}

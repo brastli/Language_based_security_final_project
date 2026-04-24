@@ -1,0 +1,9 @@
+{
+  "case_id": "case_025",
+  "cwe": "CWE-328",
+  "bandit_rule": "B324",
+  "source": "bandit_examples",
+  "vulnerability_type": "weak_crypto",
+  "vulnerable_function": "hashlib.sha1",
+  "description": "Using SHA1 for security-sensitive checksum (e.g. integrity verification) is cryptographically weak"
+}

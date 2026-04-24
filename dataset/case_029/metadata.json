@@ -1,0 +1,11 @@
+{
+  "case_id": "case_029",
+  "cwe": "CWE-78",
+  "bandit_rule": "B605",
+  "source": "SecurityEval",
+  "securityeval_id": "CWE-078_codeql_1.py",
+  "vuln_line": 13,
+  "vulnerable_function": "executeCommand",
+  "vulnerability_type": "start_process_with_a_shell",
+  "description": "import os from flask import Flask, request app = Flask(__name__) @app.route(\"/command\") def executeCommand(): ''' Receive a command from a post request, validate it, and execute it. '''"
+}

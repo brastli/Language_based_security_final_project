@@ -1,0 +1,9 @@
+{
+  "case_id": "case_001",
+  "cwe": "CWE-94",
+  "bandit_rule": "B307",
+  "source": "bandit_examples",
+  "vulnerability_type": "code_injection",
+  "vulnerable_function": "eval",
+  "description": "Use of eval on user-controlled input leading to code injection"
+}

@@ -1,0 +1,11 @@
+{
+  "case_id": "case_032",
+  "cwe": "CWE-259",
+  "bandit_rule": "B106",
+  "source": "SecurityEval",
+  "securityeval_id": "CWE-089_codeql_1.py",
+  "vuln_line": 7,
+  "vulnerable_function": "get_connection",
+  "vulnerability_type": "hardcoded_password_funcarg",
+  "description": "import mysql.connector def get_connection(): ''' Return a connection to the database ''' return mysql.connector.connect(host = \"localhost\", user = \"\",passwd = \"\") def show_user( username): ''' Get the information from the user with the \"use…"
+}

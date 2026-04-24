@@ -1,0 +1,11 @@
+{
+  "case_id": "case_039",
+  "cwe": "CWE-259",
+  "bandit_rule": "B106",
+  "source": "SecurityEval",
+  "securityeval_id": "CWE-259_author_2.py",
+  "vuln_line": 8,
+  "vulnerable_function": "getConnection",
+  "vulnerability_type": "hardcoded_password_funcarg",
+  "description": "import mysql.connector def getConnection(): ''' Return a connection object for a MySQL database. '''"
+}

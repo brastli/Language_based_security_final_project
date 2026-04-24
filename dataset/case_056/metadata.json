@@ -1,0 +1,11 @@
+{
+  "case_id": "case_056",
+  "cwe": "CWE-259",
+  "bandit_rule": "B105",
+  "source": "SecurityEval",
+  "securityeval_id": "CWE-798_codeql_1.py",
+  "vuln_line": 12,
+  "vulnerable_function": "process_request",
+  "vulnerability_type": "hardcoded_password_string",
+  "description": "from django.http import HttpResponse from django.shortcuts import redirect def process_request(request): ''' Retrieve the \"password\" from the GET request compare the password to the expected value, if it is the same, redirect to the login p…"
+}

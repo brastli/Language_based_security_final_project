@@ -1,0 +1,9 @@
+{
+  "case_id": "case_022",
+  "cwe": "CWE-78",
+  "bandit_rule": "B602",
+  "source": "bandit_examples",
+  "vulnerability_type": "subprocess_shell_injection",
+  "vulnerable_function": "subprocess.call",
+  "description": "Running npm script with user-controlled script name and shell=True leads to command injection"
+}

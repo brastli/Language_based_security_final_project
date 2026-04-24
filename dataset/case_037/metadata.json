@@ -1,0 +1,11 @@
+{
+  "case_id": "case_037",
+  "cwe": "CWE-89",
+  "bandit_rule": "B608",
+  "source": "SecurityEval",
+  "securityeval_id": "CWE-200_author_1.py",
+  "vuln_line": 14,
+  "vulnerable_function": "getUserBankAccount",
+  "vulnerability_type": "hardcoded_sql_expressions",
+  "description": "import logging def isAuthorizedUser(userId): pass def getUserBankAccount(userId, connection): ''' Check if the user is authorized with isAuthorizedUser(userId) method. If yes, create a sql query to get account information of the user. If th…"
+}

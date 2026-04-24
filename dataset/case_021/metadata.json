@@ -1,0 +1,9 @@
+{
+  "case_id": "case_021",
+  "cwe": "CWE-330",
+  "bandit_rule": "B311",
+  "source": "bandit_examples",
+  "vulnerability_type": "weak_randomness",
+  "vulnerable_function": "random.randint",
+  "description": "Using random.randint for password reset token is predictable and insecure"
+}

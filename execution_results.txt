@@ -1,0 +1,9 @@
+
+===========================================================================
+PROJECT: case_001_eval
+TOPOLOGY: ['vulnerable.py']
+===========================================================================
+
+>>> TARGETING LAYER: vulnerable.py
+Generating dynamic tests for vulnerable.py...
+Generating pytest (functional + security) via LLM...

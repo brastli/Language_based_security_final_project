@@ -1,0 +1,11 @@
+{
+  "case_id": "case_057",
+  "cwe": "CWE-400",
+  "bandit_rule": "B113",
+  "source": "SecurityEval",
+  "securityeval_id": "CWE-918_codeql_1.py",
+  "vuln_line": 13,
+  "vulnerable_function": "full_ssrf",
+  "vulnerability_type": "request_without_timeout",
+  "description": "import requests from flask import Flask, request app = Flask(__name__) @app.route(\"/full_ssrf\") def full_ssrf(): ''' Get the subdomain from the request and use it as the url, make a request to the url, and return the response '''"
+}

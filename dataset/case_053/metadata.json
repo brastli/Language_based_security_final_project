@@ -1,0 +1,11 @@
+{
+  "case_id": "case_053",
+  "cwe": "CWE-732",
+  "bandit_rule": "B103",
+  "source": "SecurityEval",
+  "securityeval_id": "CWE-732_author_1.py",
+  "vuln_line": 10,
+  "vulnerable_function": "createExecutableFile",
+  "vulnerability_type": "set_bad_file_permissions",
+  "description": "import os def createExecutableFile(data): ''' Create a binary file test.bim and make it executable. '''"
+}

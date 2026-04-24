@@ -1,0 +1,11 @@
+{
+  "case_id": "case_036",
+  "cwe": "CWE-78",
+  "bandit_rule": "B605",
+  "source": "SecurityEval",
+  "securityeval_id": "CWE-116_author_1.py",
+  "vuln_line": 15,
+  "vulnerable_function": "listFiles",
+  "vulnerability_type": "start_process_with_a_shell",
+  "description": "import os from flask import Response, request, Flask app = Flask(__name__) @app.route('/reply') def listFiles(): ''' Retrieve the \"username\" from the request's arguments, change the current directory to /home/{username}, list all the files …"
+}

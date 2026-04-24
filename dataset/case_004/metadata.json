@@ -1,0 +1,9 @@
+{
+  "case_id": "case_004",
+  "cwe": "CWE-78",
+  "bandit_rule": "B602",
+  "source": "bandit_examples",
+  "vulnerability_type": "command_injection",
+  "vulnerable_function": "subprocess.call",
+  "description": "Use of subprocess.call with shell=True may lead to OS command injection when input is user-controlled"
+}

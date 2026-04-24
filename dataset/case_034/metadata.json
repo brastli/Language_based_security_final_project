@@ -1,0 +1,11 @@
+{
+  "case_id": "case_034",
+  "cwe": "CWE-78",
+  "bandit_rule": "B102",
+  "source": "SecurityEval",
+  "securityeval_id": "CWE-094_sonar_1.py",
+  "vuln_line": 12,
+  "vulnerable_function": "index",
+  "vulnerability_type": "exec_used",
+  "description": "from flask import Flask, request app = Flask(__name__) @app.route('/') def index(): ''' Get the module version from the request object importing the urllib module with the version by using exec() '''"
+}

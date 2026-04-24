@@ -1,0 +1,11 @@
+{
+  "case_id": "case_045",
+  "cwe": "CWE-377",
+  "bandit_rule": "B306",
+  "source": "SecurityEval",
+  "securityeval_id": "CWE-377_codeql_1.py",
+  "vuln_line": 8,
+  "vulnerable_function": "write_results",
+  "vulnerability_type": "blacklist",
+  "description": "from tempfile import mktemp def write_results(results): ''' Create a temporary file and write the results to it '''"
+}

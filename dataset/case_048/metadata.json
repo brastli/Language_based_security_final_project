@@ -1,0 +1,11 @@
+{
+  "case_id": "case_048",
+  "cwe": "CWE-20",
+  "bandit_rule": "B506",
+  "source": "SecurityEval",
+  "securityeval_id": "CWE-502_sonar_1.py",
+  "vuln_line": 11,
+  "vulnerable_function": "yaml_load",
+  "vulnerability_type": "yaml_load",
+  "description": "from flask import request import yaml app = Flask(__name__) @app.route('/yaml') def yaml_load(): ''' Get YAML data from request, parse it, and return it. '''"
+}

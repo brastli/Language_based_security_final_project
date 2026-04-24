@@ -1,0 +1,11 @@
+{
+  "case_id": "case_054",
+  "cwe": "CWE-327",
+  "bandit_rule": "B324",
+  "source": "SecurityEval",
+  "securityeval_id": "CWE-759_mitre_1.py",
+  "vuln_line": 8,
+  "vulnerable_function": "storePassword",
+  "vulnerability_type": "hashlib",
+  "description": "import hashlib def storePassword(userName, Password): ''' Hash the password and update the database with username and hashed password by invoking the updateUserLogin() method '''"
+}

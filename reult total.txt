@@ -1,0 +1,242 @@
+
+Case-based Analysis Complete!
+Total Unique Cases Evaluated: 61
+Successfully Fixed Cases: 14
+Failed to Fix: 47
+Final Success Rate: 22.95%
+
+Detailed List of Successfully Fixed Projects:
+
+✓ case_001_eval              | Fixed at Attempt: 3/3 | 6 passed in 0.07s
+✓ case_008                   | Fixed at Attempt: 3/3 | 7 passed in 0.07s
+✓ case_009_yaml_load         | Fixed at Attempt: 2/3 | 6 passed in 0.14s
+✓ case_014                   | Fixed at Attempt: 2/3 | 8 passed in 0.07s
+✓ case_027                   | Fixed at Attempt: 3/3 | 5 passed in 0.23s
+✓ case_039                   | Fixed at Attempt: 3/3 | 5 passed in 0.14s
+✓ case_042                   | Fixed at Attempt: 1/3 | 6 passed in 0.10s
+✓ case_044                   | Fixed at Attempt: 2/3 | 6 passed in 0.07s
+✓ case_045                   | Fixed at Attempt: 2/3 | 5 passed in 0.06s
+✓ case_046                   | Fixed at Attempt: 3/3 | 5 passed in 0.06s
+✓ case_051                   | Fixed at Attempt: 2/3 | 5 passed in 0.06s
+✓ case_052                   | Fixed at Attempt: 1/3 | 7 passed in 0.08s
+✓ case_055                   | Fixed at Attempt: 2/3 | 7 passed in 0.13s
+✓ project_003_path_traversal | Fixed at Attempt: Baseline | 5 passed in 0.07s
+
+(venv) PS C:\Users\11855\Desktop\language based security\Language_based_security_final_project> python filter_perfect_cases.py
+ Case-based Analysis Complete!
+ Total Unique Cases Evaluated: 61
+ Successfully Fixed Cases: 14
+ Failed to Fix: 47
+ Final Success Rate: 22.95%
+--------------------------------------------------
+Detailed List of Successfully Fixed Projects:
+✔ case_001_eval                  | Fixed at Attempt: Baseline | 7 passed in 0.10s
+✔ case_007_random_module         | Fixed at Attempt: 2/3 | 7 passed in 0.06s
+✔ case_008                       | Fixed at Attempt: 2/3 | 13 passed in 0.06s
+✔ case_014                       | Fixed at Attempt: Baseline | 6 passed in 0.05s
+✔ case_021                       | Fixed at Attempt: 2/3 | 10 passed in 0.06s
+✔ case_027                       | Fixed at Attempt: 2/3 | 6 passed in 0.11s
+✔ case_039                       | Fixed at Attempt: 3/3 | 8 passed in 0.15s
+✔ case_042                       | Fixed at Attempt: Baseline | 6 passed in 0.06s
+✔ case_044                       | Fixed at Attempt: Baseline | 6 passed in 0.07s
+✔ case_046                       | Fixed at Attempt: Baseline | 11 passed in 0.09s
+✔ case_051                       | Fixed at Attempt: 2/3 | 6 passed in 0.25s
+✔ case_052                       | Fixed at Attempt: Baseline | 6 passed in 0.05s
+✔ case_057                       | Fixed at Attempt: 2/3 | 5 passed in 0.47s
+✔ project_003_path_traversal     | Fixed at Attempt: Baseline | 8 passed in 0.06s
+
+ Case-based Analysis Complete!
+ Total Unique Cases Evaluated: 61
+ Successfully Fixed Cases: 12
+ Failed to Fix: 49
+ Final Success Rate: 19.67%
+--------------------------------------------------
+Detailed List of Successfully Fixed Projects:
+✔ case_001_eval                  | Fixed at Attempt: Baseline | 13 passed in 0.13s
+✔ case_009_yaml_load             | Fixed at Attempt: Baseline | 6 passed in 0.14s
+✔ case_014                       | Fixed at Attempt: Baseline | 5 passed in 0.06s
+✔ case_021                       | Fixed at Attempt: Baseline | 5 passed in 0.06s
+✔ case_027                       | Fixed at Attempt: 2/3 | 8 passed in 0.09s
+✔ case_039                       | Fixed at Attempt: 2/3 | 6 passed in 0.12s
+✔ case_042                       | Fixed at Attempt: Baseline | 6 passed in 0.06s
+✔ case_044                       | Fixed at Attempt: Baseline | 6 passed in 0.06s
+✔ case_046                       | Fixed at Attempt: Baseline | 12 passed in 0.06s
+✔ case_051                       | Fixed at Attempt: 1/3 | 12 passed in 0.48s
+✔ case_052                       | Fixed at Attempt: Baseline | 8 passed in 0.05s
+✔ project_003_path_traversal     | Fixed at Attempt: Baseline | 8 passed in 0.07s
+
+
+PS C:\Users\11855\Desktop\language based security\Language_based_security_final_project> python filter_perfect_cases.py
+ Case-based Analysis Complete!
+ Total Unique Cases Evaluated: 61
+ Successfully Fixed Cases: 14
+ Failed to Fix: 47
+ Final Success Rate: 22.95%
+--------------------------------------------------
+Detailed List of Successfully Fixed Projects:
+✔ case_001_eval                  | Fixed at Attempt: Baseline | 12 passed in 0.08s
+✔ case_009_yaml_load             | Fixed at Attempt: Baseline | 6 passed in 0.11s
+✔ case_014                       | Fixed at Attempt: Baseline | 6 passed in 0.06s
+✔ case_021                       | Fixed at Attempt: Baseline | 12 passed in 0.11s
+✔ case_028                       | Fixed at Attempt: 2/3 | 8 passed in 0.26s
+✔ case_038                       | Fixed at Attempt: 3/3 | 6 passed in 0.03s
+✔ case_039                       | Fixed at Attempt: 2/3 | 6 passed in 0.08s
+✔ case_042                       | Fixed at Attempt: Baseline | 6 passed in 0.04s
+✔ case_044                       | Fixed at Attempt: Baseline | 6 passed in 0.04s
+✔ case_046                       | Fixed at Attempt: Baseline | 6 passed in 0.04s
+✔ case_051                       | Fixed at Attempt: 1/3 | 9 passed in 0.48s
+✔ case_052                       | Fixed at Attempt: Baseline | 6 passed in 0.04s
+✔ case_055                       | Fixed at Attempt: Baseline | 4 passed in 0.15s
+✔ project_003_path_traversal     | Fixed at Attempt: Baseline | 7 passed in 0.05s\
+
+
+(venv) PS C:\Users\11855\Desktop\language based security\Language_based_security_final_project> python filter_perfect_cases.py
+ Case-based Analysis Complete!
+ Total Unique Cases Evaluated: 61
+ Successfully Fixed Cases: 12
+ Failed to Fix: 49
+ Final Success Rate: 19.67%
+--------------------------------------------------
+Detailed List of Successfully Fixed Projects:
+✔ case_001_eval                  | Fixed at Attempt: Baseline | 14 passed in 0.05s
+✔ case_008                       | Fixed at Attempt: 2/3 | 9 passed in 0.08s
+✔ case_009_yaml_load             | Fixed at Attempt: Baseline | 8 passed in 0.12s
+✔ case_014                       | Fixed at Attempt: Baseline | 6 passed in 0.06s
+✔ case_038                       | Fixed at Attempt: 3/3 | 7 passed in 0.05s
+✔ case_042                       | Fixed at Attempt: Baseline | 6 passed in 0.04s
+✔ case_043                       | Fixed at Attempt: 3/3 | 10 passed in 0.05s
+✔ case_044                       | Fixed at Attempt: Baseline | 6 passed in 0.04s
+✔ case_046                       | Fixed at Attempt: Baseline | 13 passed in 0.05s
+✔ case_051                       | Fixed at Attempt: 1/3 | 12 passed in 0.45s
+✔ case_052                       | Fixed at Attempt: Baseline | 6 passed in 0.03s
+✔ project_003_path_traversal     | Fixed at Attempt: Baseline | 5 passed in 0.04s
+
+PS C:\Users\11855\Desktop\language based security\Language_based_security_final_project> python filter_perfect_cases.py
+ Case-based Analysis Complete!
+ Total Unique Cases Evaluated: 61
+ Successfully Fixed Cases: 15
+ Failed to Fix: 46
+ Final Success Rate: 24.59%
+--------------------------------------------------
+Detailed List of Successfully Fixed Projects:
+✔ case_001_eval                  | Fixed at Attempt: Baseline | 13 passed in 0.11s
+✔ case_014                       | Fixed at Attempt: Baseline | 6 passed in 0.09s
+✔ case_016                       | Fixed at Attempt: 1/3 | 9 passed in 0.09s
+✔ case_027                       | Fixed at Attempt: 2/3 | 8 passed in 0.08s
+✔ case_038                       | Fixed at Attempt: 1/3 | 7 passed in 0.06s
+✔ case_042                       | Fixed at Attempt: Baseline | 6 passed in 0.05s
+✔ case_043                       | Fixed at Attempt: 1/3 | 10 passed in 0.08s
+✔ case_044                       | Fixed at Attempt: Baseline | 6 passed in 0.06s
+✔ case_046                       | Fixed at Attempt: Baseline | 13 passed in 0.07s
+✔ case_051                       | Fixed at Attempt: 1/3 | 12 passed in 0.53s
+✔ case_052                       | Fixed at Attempt: Baseline | 5 passed in 0.10s
+✔ case_055                       | Fixed at Attempt: Baseline | 5 passed in 0.13s
+✔ case_057                       | Fixed at Attempt: 3/3 | 14 passed in 1.05s
+✔ project_002_cmdi               | Fixed at Attempt: 2/3 | 8 passed in 0.21s
+✔ project_003_path_traversal     | Fixed at Attempt: Baseline | 10 passed in 0.07s
+
+PS C:\Users\11855\Desktop\language based security\Language_based_security_final_project> python filter_perfect_cases.py
+ Case-based Analysis Complete!
+ Total Unique Cases Evaluated: 61
+ Successfully Fixed Cases: 16
+ Failed to Fix: 45
+ Final Success Rate: 26.23%
+--------------------------------------------------
+Detailed List of Successfully Fixed Projects:
+✔ case_001_eval                  | Fixed at Attempt: Baseline | 6 passed in 0.13s
+✔ case_007_random_module         | Fixed at Attempt: 2/3 | 4 passed in 0.08s
+✔ case_014                       | Fixed at Attempt: Baseline | 6 passed in 0.13s
+✔ case_021                       | Fixed at Attempt: Baseline | 6 passed in 0.15s
+✔ case_027                       | Fixed at Attempt: 2/3 | 8 passed in 0.12s
+✔ case_028                       | Fixed at Attempt: 3/3 | 8 passed in 0.19s
+✔ case_039                       | Fixed at Attempt: 2/3 | 6 passed in 0.14s
+✔ case_040                       | Fixed at Attempt: 3/3 | 8 passed in 0.33s
+✔ case_043                       | Fixed at Attempt: 2/3 | 10 passed in 0.10s
+✔ case_044                       | Fixed at Attempt: Baseline | 6 passed in 0.07s
+✔ case_051                       | Fixed at Attempt: 1/3 | 8 passed in 0.51s
+✔ case_052                       | Fixed at Attempt: Baseline | 5 passed in 0.06s
+✔ case_055                       | Fixed at Attempt: Baseline | 5 passed in 0.15s
+✔ case_057                       | Fixed at Attempt: 2/3 | 13 passed in 0.44s
+✔ project_002_cmdi               | Fixed at Attempt: 1/3 | 7 passed in 0.07s
+✔ project_003_path_traversal     | Fixed at Attempt: Baseline | 6 passed in 0.08s
+
+PS C:\Users\11855\Desktop\language based security\Language_based_security_final_project> python filter_perfect_cases.py
+ Case-based Analysis Complete!
+ Total Unique Cases Evaluated: 61
+ Successfully Fixed Cases: 18
+ Failed to Fix: 43
+ Final Success Rate: 29.51%
+--------------------------------------------------
+Detailed List of Successfully Fixed Projects:
+✔ case_001_eval                  | Fixed at Attempt: Baseline | 13 passed in 0.10s
+✔ case_007_random_module         | Fixed at Attempt: Baseline | 6 passed in 0.08s
+✔ case_009_yaml_load             | Fixed at Attempt: Baseline | 6 passed in 0.15s
+✔ case_014                       | Fixed at Attempt: Baseline | 6 passed in 0.08s
+✔ case_027                       | Fixed at Attempt: 2/3 | 9 passed in 0.12s
+✔ case_028                       | Fixed at Attempt: 2/3 | 11 passed in 0.25s
+✔ case_035                       | Fixed at Attempt: 2/3 | 6 passed in 0.06s
+✔ case_042                       | Fixed at Attempt: Baseline | 6 passed in 0.08s
+✔ case_043                       | Fixed at Attempt: 2/3 | 9 passed in 0.11s
+✔ case_044                       | Fixed at Attempt: Baseline | 6 passed in 0.08s
+✔ case_045                       | Fixed at Attempt: Baseline | 6 passed in 0.08s
+✔ case_046                       | Fixed at Attempt: Baseline | 9 passed in 0.07s
+✔ case_049                       | Fixed at Attempt: 3/3 | 9 passed in 0.09s
+✔ case_051                       | Fixed at Attempt: 1/3 | 12 passed in 0.29s
+✔ case_052                       | Fixed at Attempt: Baseline | 6 passed in 0.06s
+✔ case_055                       | Fixed at Attempt: Baseline | 5 passed in 0.14s
+✔ project_002_cmdi               | Fixed at Attempt: 1/3 | 5 passed in 0.07s
+✔ project_003_path_traversal     | Fixed at Attempt: Baseline | 5 passed in 0.07s
+
+PS C:\Users\11855\Desktop\language based security\Language_based_security_final_project> python filter_perfect_cases.py
+ Case-based Analysis Complete!
+ Total Unique Cases Evaluated: 61
+ Successfully Fixed Cases: 18
+ Failed to Fix: 43
+ Final Success Rate: 29.51%
+--------------------------------------------------
+Detailed List of Successfully Fixed Projects:
+✔ case_001_eval                  | Fixed at Attempt: Baseline | 13 passed in 0.10s
+✔ case_007_random_module         | Fixed at Attempt: Baseline | 6 passed in 0.07s
+✔ case_008                       | Fixed at Attempt: 2/3 | 10 passed in 0.06s
+✔ case_009_yaml_load             | Fixed at Attempt: Baseline | 9 passed in 0.10s
+✔ case_014                       | Fixed at Attempt: Baseline | 6 passed in 0.08s
+✔ case_021                       | Fixed at Attempt: Baseline | 6 passed in 0.08s
+✔ case_027                       | Fixed at Attempt: 3/3 | 8 passed in 0.08s
+✔ case_028                       | Fixed at Attempt: 2/3 | 8 passed in 0.21s
+✔ case_035                       | Fixed at Attempt: Baseline | 13 passed in 0.09s
+✔ case_039                       | Fixed at Attempt: 2/3 | 6 passed in 0.17s
+✔ case_042                       | Fixed at Attempt: Baseline | 6 passed in 0.07s
+✔ case_043                       | Fixed at Attempt: 1/3 | 11 passed in 0.10s
+✔ case_044                       | Fixed at Attempt: Baseline | 6 passed in 0.07s
+✔ case_046                       | Fixed at Attempt: Baseline | 6 passed in 0.07s
+✔ case_051                       | Fixed at Attempt: 1/3 | 12 passed in 0.49s
+✔ case_052                       | Fixed at Attempt: Baseline | 6 passed in 0.07s
+✔ project_002_cmdi               | Fixed at Attempt: 1/3 | 8 passed in 0.08s
+✔ project_003_path_traversal     | Fixed at Attempt: Baseline | 5 passed in 0.07s
+
+PS C:\Users\11855\Desktop\language based security\Language_based_security_final_project> python filter_perfect_cases.py
+ Case-based Analysis Complete!
+ Total Unique Cases Evaluated: 61
+ Successfully Fixed Cases: 18
+ Failed to Fix: 43
+ Final Success Rate: 29.51%
+--------------------------------------------------
+Detailed List of Successfully Fixed Projects:
+✔ case_001_eval                  | Fixed at Attempt: Baseline | 14 passed in 0.11s
+✔ case_007_random_module         | Fixed at Attempt: Baseline | 4 passed in 0.07s
+✔ case_008                       | Fixed at Attempt: 3/3 | 13 passed in 0.07s
+✔ case_009_yaml_load             | Fixed at Attempt: Baseline | 6 passed in 0.10s
+✔ case_014                       | Fixed at Attempt: Baseline | 5 passed in 0.07s
+✔ case_021                       | Fixed at Attempt: Baseline | 6 passed in 0.08s
+✔ case_028                       | Fixed at Attempt: 2/3 | 5 passed in 0.16s
+✔ case_035                       | Fixed at Attempt: Baseline | 7 passed in 0.09s
+✔ case_039                       | Fixed at Attempt: 2/3 | 8 passed in 0.12s
+✔ case_042                       | Fixed at Attempt: Baseline | 6 passed in 0.08s
+✔ case_043                       | Fixed at Attempt: Baseline | 10 passed in 0.09s
+✔ case_044                       | Fixed at Attempt: Baseline | 6 passed in 0.07s
+✔ case_046                       | Fixed at Attempt: Baseline | 6 passed in 0.07s
+✔ case_051                       | Fixed at Attempt: 1/3 | 8 passed in 0.15s
+✔ case_052                       | Fixed at Attempt: Baseline | 6 passed in 0.11s
+✔ case_057                       | Fixed at Attempt: 3/3 | 20 passed in 0.53s
+✔ project_002_cmdi               | Fixed at Attempt: 1/3 | 5 passed in 0.08s
+✔ project_003_path_traversal     | Fixed at Attempt: Baseline | 5 passed in 0.07s

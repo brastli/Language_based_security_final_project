@@ -1,0 +1,11 @@
+{
+  "case_id": "case_049",
+  "cwe": "CWE-259",
+  "bandit_rule": "B106",
+  "source": "SecurityEval",
+  "securityeval_id": "CWE-522_author_1.py",
+  "vuln_line": 9,
+  "vulnerable_function": "checkPassword",
+  "vulnerability_type": "hardcoded_password_funcarg",
+  "description": "import base64 import MySQLdb def checkPassword(userid, password): ''' Get the password of the userid from the database and compare with the provided one. '''"
+}
