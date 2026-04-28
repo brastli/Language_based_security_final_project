@@ -1,0 +1,6 @@
+{
+  "project_id": "003",
+  "cwe_id": "22",
+  "vulnerability_type": "Path Traversal",
+  "description": "User input from API is joined into file path without validation."
+}

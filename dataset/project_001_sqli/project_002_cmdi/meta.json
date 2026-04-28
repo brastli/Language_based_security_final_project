@@ -1,0 +1,6 @@
+{
+  "project_id": "002",
+  "cwe_id": "78",
+  "vulnerability_type": "OS Command Injection",
+  "description": "User input from API is concatenated into shell command in utils module."
+}

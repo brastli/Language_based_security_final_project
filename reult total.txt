@@ -1,242 +1,432 @@
+PS C:\Users\11855\Desktop\language based security\Language_based_security_final_project> python main.py
+============================================================
+ SurgicalPatch: 带有策略演进的自治 DevSecOps 流水线 
+============================================================
+正在基于 AST 拓扑排序分析 73 个文件...
+确立的自底向上修复信任链序列:
+  1. dataset\case_001_eval\vulnerable.py
+  2. dataset\case_002_os_system\vulnerable.py
+  3. dataset\case_003_subprocess_shell\vulnerable.py
+  4. dataset\case_006_pickle_deserialize\vulnerable.py
+  5. dataset\case_007_random_module\vulnerable.py
+  6. dataset\case_009_yaml_load\vulnerable.py
+  7. dataset\case_012\vulnerable.py
+  8. dataset\case_016\vulnerable.py
+  9. dataset\case_018\vulnerable.py
+  10. dataset\case_019\vulnerable.py
+  11. dataset\case_023\vulnerable.py
+  12. dataset\case_025\vulnerable.py
+  13. dataset\case_027\vulnerable.py
+  14. dataset\case_028\vulnerable.py
+  15. dataset\case_030\vulnerable.py
+  16. dataset\case_031\vulnerable.py
+  17. dataset\case_032\vulnerable.py
+  18. dataset\case_033\vulnerable.py
+  19. dataset\case_034\vulnerable.py
+  20. dataset\case_035\vulnerable.py
+  21. dataset\case_037\vulnerable.py
+  22. dataset\case_038\vulnerable.py
+  23. dataset\case_039\vulnerable.py
+  24. dataset\case_040\vulnerable.py
+  25. dataset\case_041\vulnerable.py
+  26. dataset\case_045\vulnerable.py
+  27. dataset\case_046\vulnerable.py
+  28. dataset\case_047\vulnerable.py
+  29. dataset\case_049\vulnerable.py
+  30. dataset\case_050\vulnerable.py
+  31. dataset\case_051\vulnerable.py
+  32. dataset\case_052\vulnerable.py
+  33. dataset\case_054\vulnerable.py
+  34. dataset\case_055\vulnerable.py
+  35. dataset\case_056\vulnerable.py
+  36. dataset\case_057\vulnerable.py
+  37. dataset\case_058\vulnerable.py
+  38. dataset\project_001_sqli\src\db.py
+  39. dataset\project_001_sqli\src\utils.py
+  40. dataset\project_001_sqli\src\__init__.py
+  41. dataset\project_001_sqli\tests\__init__.py
+  42. dataset\project_002_cmdi\src\db.py
+  43. dataset\project_002_cmdi\src\__init__.py
+  44. dataset\project_002_cmdi\tests\__init__.py
+  45. dataset\project_003_path_traversal\src\db.py
+  46. dataset\project_003_path_traversal\src\utils.py
+  47. dataset\project_003_path_traversal\src\__init__.py
+  48. dataset\project_003_path_traversal\tests\__init__.py
+  49. dataset\case_010\vulnerable.py
+  50. dataset\case_017\vulnerable.py
+  51. dataset\case_024\vulnerable.py
+  52. dataset\case_029\vulnerable.py
+  53. dataset\case_036\vulnerable.py
+  54. dataset\case_053\vulnerable.py
+  55. dataset\project_002_cmdi\src\utils.py
+  56. dataset\case_004\vulnerable.py
+  57. dataset\case_005\vulnerable.py
+  58. dataset\case_015\vulnerable.py
+  59. dataset\case_022\vulnerable.py
+  60. dataset\case_011\vulnerable.py
+  61. dataset\case_008\vulnerable.py
+  62. dataset\case_014\vulnerable.py
+  63. dataset\case_021\vulnerable.py
+  64. dataset\case_042\vulnerable.py
+  65. dataset\case_043\vulnerable.py
+  66. dataset\case_044\vulnerable.py
+  67. dataset\case_013\vulnerable.py
+  68. dataset\case_020\vulnerable.py
+  69. dataset\case_026\vulnerable.py
+  70. dataset\case_048\vulnerable.py
+  71. dataset\project_001_sqli\src\api.py
+  72. dataset\project_002_cmdi\src\api.py
+  73. dataset\project_003_path_traversal\src\api.py
 
-Case-based Analysis Complete!
-Total Unique Cases Evaluated: 61
-Successfully Fixed Cases: 14
-Failed to Fix: 47
-Final Success Rate: 22.95%
+============================================================
+▶ 正在处理目标文件: dataset\case_001_eval\vulnerable.py
+============================================================
+[SCANNER] 发现漏洞: CWE-78 位于第 2 行。
+[STRATEGY DB] 未命中。CWE-78 无历史策略，启用 LLM 初始探索。
+[SLICER] 切片提取状态: AST_EXACT_MATCH
+[TEST GEN] 正在调用 LLM 生成验证测试套件...
+Generating pytest (functional + security) via LLM...
 
-Detailed List of Successfully Fixed Projects:
+--- 迭代尝试 1/3 ---
+[LLM 推理]: Replaced unsafe eval with ast.literal_eval to preserve intended literal parsing while preventing arbitrary code execution.
+[SANDBOX] 正在执行 Guardrail 验证...
+[SANDBOX 失败] Guardrail Rejected: Test Failed
+将错误回溯发送给下一轮迭代。
 
-✓ case_001_eval              | Fixed at Attempt: 3/3 | 6 passed in 0.07s
-✓ case_008                   | Fixed at Attempt: 3/3 | 7 passed in 0.07s
-✓ case_009_yaml_load         | Fixed at Attempt: 2/3 | 6 passed in 0.14s
-✓ case_014                   | Fixed at Attempt: 2/3 | 8 passed in 0.07s
-✓ case_027                   | Fixed at Attempt: 3/3 | 5 passed in 0.23s
-✓ case_039                   | Fixed at Attempt: 3/3 | 5 passed in 0.14s
-✓ case_042                   | Fixed at Attempt: 1/3 | 6 passed in 0.10s
-✓ case_044                   | Fixed at Attempt: 2/3 | 6 passed in 0.07s
-✓ case_045                   | Fixed at Attempt: 2/3 | 5 passed in 0.06s
-✓ case_046                   | Fixed at Attempt: 3/3 | 5 passed in 0.06s
-✓ case_051                   | Fixed at Attempt: 2/3 | 5 passed in 0.06s
-✓ case_052                   | Fixed at Attempt: 1/3 | 7 passed in 0.08s
-✓ case_055                   | Fixed at Attempt: 2/3 | 7 passed in 0.13s
-✓ project_003_path_traversal | Fixed at Attempt: Baseline | 5 passed in 0.07s
+--- 迭代尝试 2/3 ---
+[LLM 推理]: Replaced unsafe eval with ast.literal_eval to prevent code execution while preserving literal parsing behavior. Added a safe fallback to return the original input when it is not a valid Python literal, which keeps the function usable without introducing execution risk. The previous failure was an environment/import issue unrelated to the function logic, so the repair strategy is refined to focus on literal-only parsing and graceful handling of non-literals.
+[SANDBOX] 正在执行 Guardrail 验证...
+[SANDBOX 失败] Guardrail Rejected: Test Failed
+将错误回溯发送给下一轮迭代。
 
-(venv) PS C:\Users\11855\Desktop\language based security\Language_based_security_final_project> python filter_perfect_cases.py
- Case-based Analysis Complete!
- Total Unique Cases Evaluated: 61
- Successfully Fixed Cases: 14
- Failed to Fix: 47
- Final Success Rate: 22.95%
---------------------------------------------------
-Detailed List of Successfully Fixed Projects:
-✔ case_001_eval                  | Fixed at Attempt: Baseline | 7 passed in 0.10s
-✔ case_007_random_module         | Fixed at Attempt: 2/3 | 7 passed in 0.06s
-✔ case_008                       | Fixed at Attempt: 2/3 | 13 passed in 0.06s
-✔ case_014                       | Fixed at Attempt: Baseline | 6 passed in 0.05s
-✔ case_021                       | Fixed at Attempt: 2/3 | 10 passed in 0.06s
-✔ case_027                       | Fixed at Attempt: 2/3 | 6 passed in 0.11s
-✔ case_039                       | Fixed at Attempt: 3/3 | 8 passed in 0.15s
-✔ case_042                       | Fixed at Attempt: Baseline | 6 passed in 0.06s
-✔ case_044                       | Fixed at Attempt: Baseline | 6 passed in 0.07s
-✔ case_046                       | Fixed at Attempt: Baseline | 11 passed in 0.09s
-✔ case_051                       | Fixed at Attempt: 2/3 | 6 passed in 0.25s
-✔ case_052                       | Fixed at Attempt: Baseline | 6 passed in 0.05s
-✔ case_057                       | Fixed at Attempt: 2/3 | 5 passed in 0.47s
-✔ project_003_path_traversal     | Fixed at Attempt: Baseline | 8 passed in 0.06s
+--- 迭代尝试 3/3 ---
+[LLM 推理]: Replaced unsafe eval with ast.literal_eval to prevent code execution while preserving literal parsing behavior. Added a controlled fallback to return the original input when parsing fails, keeping the function safe and non-destructive. Also included the required import for literal parsing.
+[SANDBOX] 正在执行 Guardrail 验证...
+[SANDBOX 失败] Guardrail Rejected: Test Failed
+将错误回溯发送给下一轮迭代。
 
- Case-based Analysis Complete!
- Total Unique Cases Evaluated: 61
- Successfully Fixed Cases: 12
- Failed to Fix: 49
- Final Success Rate: 19.67%
---------------------------------------------------
-Detailed List of Successfully Fixed Projects:
-✔ case_001_eval                  | Fixed at Attempt: Baseline | 13 passed in 0.13s
-✔ case_009_yaml_load             | Fixed at Attempt: Baseline | 6 passed in 0.14s
-✔ case_014                       | Fixed at Attempt: Baseline | 5 passed in 0.06s
-✔ case_021                       | Fixed at Attempt: Baseline | 5 passed in 0.06s
-✔ case_027                       | Fixed at Attempt: 2/3 | 8 passed in 0.09s
-✔ case_039                       | Fixed at Attempt: 2/3 | 6 passed in 0.12s
-✔ case_042                       | Fixed at Attempt: Baseline | 6 passed in 0.06s
-✔ case_044                       | Fixed at Attempt: Baseline | 6 passed in 0.06s
-✔ case_046                       | Fixed at Attempt: Baseline | 12 passed in 0.06s
-✔ case_051                       | Fixed at Attempt: 1/3 | 12 passed in 0.48s
-✔ case_052                       | Fixed at Attempt: Baseline | 8 passed in 0.05s
-✔ project_003_path_traversal     | Fixed at Attempt: Baseline | 8 passed in 0.07s
+[FAILED] 达到最大尝试次数，未能收敛验证。
 
+============================================================
+▶ 正在处理目标文件: dataset\case_002_os_system\vulnerable.py
+============================================================
+[SCANNER] 发现漏洞: CWE-78 位于第 4 行。
+[STRATEGY DB] 未命中。CWE-78 无历史策略，启用 LLM 初始探索。
+[SLICER] 切片提取状态: AST_EXACT_MATCH
+[TEST GEN] 正在调用 LLM 生成验证测试套件...
+Generating pytest (functional + security) via LLM...
 
-PS C:\Users\11855\Desktop\language based security\Language_based_security_final_project> python filter_perfect_cases.py
- Case-based Analysis Complete!
- Total Unique Cases Evaluated: 61
- Successfully Fixed Cases: 14
- Failed to Fix: 47
- Final Success Rate: 22.95%
---------------------------------------------------
-Detailed List of Successfully Fixed Projects:
-✔ case_001_eval                  | Fixed at Attempt: Baseline | 12 passed in 0.08s
-✔ case_009_yaml_load             | Fixed at Attempt: Baseline | 6 passed in 0.11s
-✔ case_014                       | Fixed at Attempt: Baseline | 6 passed in 0.06s
-✔ case_021                       | Fixed at Attempt: Baseline | 12 passed in 0.11s
-✔ case_028                       | Fixed at Attempt: 2/3 | 8 passed in 0.26s
-✔ case_038                       | Fixed at Attempt: 3/3 | 6 passed in 0.03s
-✔ case_039                       | Fixed at Attempt: 2/3 | 6 passed in 0.08s
-✔ case_042                       | Fixed at Attempt: Baseline | 6 passed in 0.04s
-✔ case_044                       | Fixed at Attempt: Baseline | 6 passed in 0.04s
-✔ case_046                       | Fixed at Attempt: Baseline | 6 passed in 0.04s
-✔ case_051                       | Fixed at Attempt: 1/3 | 9 passed in 0.48s
-✔ case_052                       | Fixed at Attempt: Baseline | 6 passed in 0.04s
-✔ case_055                       | Fixed at Attempt: Baseline | 4 passed in 0.15s
-✔ project_003_path_traversal     | Fixed at Attempt: Baseline | 7 passed in 0.05s\
+--- 迭代尝试 1/3 ---
+[LLM 推理]: Replaced the shell-based os.system call with subprocess.run using a list of arguments to avoid command injection while preserving the function signature and returning the process exit code.
+[SANDBOX] 正在执行 Guardrail 验证...
+[SANDBOX 失败] Guardrail Rejected: Test Failed
+将错误回溯发送给下一轮迭代。
 
+--- 迭代尝试 2/3 ---
+[LLM 推理]: Replaced shell execution with subprocess.run using a list of arguments when the input is already tokenized, and added a safe fallback for string commands by invoking the platform shell executable explicitly with a single argument list. This preserves the function signature and avoids shell=True while keeping behavior compatible across environments.
+[SANDBOX] 正在执行 Guardrail 验证...
+[SANDBOX 失败] Guardrail Rejected: Test Failed
+将错误回溯发送给下一轮迭代。
 
-(venv) PS C:\Users\11855\Desktop\language based security\Language_based_security_final_project> python filter_perfect_cases.py
- Case-based Analysis Complete!
- Total Unique Cases Evaluated: 61
- Successfully Fixed Cases: 12
- Failed to Fix: 49
- Final Success Rate: 19.67%
---------------------------------------------------
-Detailed List of Successfully Fixed Projects:
-✔ case_001_eval                  | Fixed at Attempt: Baseline | 14 passed in 0.05s
-✔ case_008                       | Fixed at Attempt: 2/3 | 9 passed in 0.08s
-✔ case_009_yaml_load             | Fixed at Attempt: Baseline | 8 passed in 0.12s
-✔ case_014                       | Fixed at Attempt: Baseline | 6 passed in 0.06s
-✔ case_038                       | Fixed at Attempt: 3/3 | 7 passed in 0.05s
-✔ case_042                       | Fixed at Attempt: Baseline | 6 passed in 0.04s
-✔ case_043                       | Fixed at Attempt: 3/3 | 10 passed in 0.05s
-✔ case_044                       | Fixed at Attempt: Baseline | 6 passed in 0.04s
-✔ case_046                       | Fixed at Attempt: Baseline | 13 passed in 0.05s
-✔ case_051                       | Fixed at Attempt: 1/3 | 12 passed in 0.45s
-✔ case_052                       | Fixed at Attempt: Baseline | 6 passed in 0.03s
-✔ project_003_path_traversal     | Fixed at Attempt: Baseline | 5 passed in 0.04s
+--- 迭代尝试 3/3 ---
+[LLM 推理]: Replaced the shell-based os.system call with subprocess.run using an argument list. To preserve compatibility with raw command strings while avoiding shell=True, the function now dispatches through the platform shell executable explicitly (cmd.exe on Windows, /bin/sh on POSIX) via a list of arguments. This keeps the signature unchanged and neutralizes command injection risk from direct shell invocation.
+[SANDBOX] 正在执行 Guardrail 验证...
+[SANDBOX 失败] Guardrail Rejected: Test Failed
+将错误回溯发送给下一轮迭代。
 
-PS C:\Users\11855\Desktop\language based security\Language_based_security_final_project> python filter_perfect_cases.py
- Case-based Analysis Complete!
- Total Unique Cases Evaluated: 61
- Successfully Fixed Cases: 15
- Failed to Fix: 46
- Final Success Rate: 24.59%
---------------------------------------------------
-Detailed List of Successfully Fixed Projects:
-✔ case_001_eval                  | Fixed at Attempt: Baseline | 13 passed in 0.11s
-✔ case_014                       | Fixed at Attempt: Baseline | 6 passed in 0.09s
-✔ case_016                       | Fixed at Attempt: 1/3 | 9 passed in 0.09s
-✔ case_027                       | Fixed at Attempt: 2/3 | 8 passed in 0.08s
-✔ case_038                       | Fixed at Attempt: 1/3 | 7 passed in 0.06s
-✔ case_042                       | Fixed at Attempt: Baseline | 6 passed in 0.05s
-✔ case_043                       | Fixed at Attempt: 1/3 | 10 passed in 0.08s
-✔ case_044                       | Fixed at Attempt: Baseline | 6 passed in 0.06s
-✔ case_046                       | Fixed at Attempt: Baseline | 13 passed in 0.07s
-✔ case_051                       | Fixed at Attempt: 1/3 | 12 passed in 0.53s
-✔ case_052                       | Fixed at Attempt: Baseline | 5 passed in 0.10s
-✔ case_055                       | Fixed at Attempt: Baseline | 5 passed in 0.13s
-✔ case_057                       | Fixed at Attempt: 3/3 | 14 passed in 1.05s
-✔ project_002_cmdi               | Fixed at Attempt: 2/3 | 8 passed in 0.21s
-✔ project_003_path_traversal     | Fixed at Attempt: Baseline | 10 passed in 0.07s
+[FAILED] 达到最大尝试次数，未能收敛验证。
 
-PS C:\Users\11855\Desktop\language based security\Language_based_security_final_project> python filter_perfect_cases.py
- Case-based Analysis Complete!
- Total Unique Cases Evaluated: 61
- Successfully Fixed Cases: 16
- Failed to Fix: 45
- Final Success Rate: 26.23%
---------------------------------------------------
-Detailed List of Successfully Fixed Projects:
-✔ case_001_eval                  | Fixed at Attempt: Baseline | 6 passed in 0.13s
-✔ case_007_random_module         | Fixed at Attempt: 2/3 | 4 passed in 0.08s
-✔ case_014                       | Fixed at Attempt: Baseline | 6 passed in 0.13s
-✔ case_021                       | Fixed at Attempt: Baseline | 6 passed in 0.15s
-✔ case_027                       | Fixed at Attempt: 2/3 | 8 passed in 0.12s
-✔ case_028                       | Fixed at Attempt: 3/3 | 8 passed in 0.19s
-✔ case_039                       | Fixed at Attempt: 2/3 | 6 passed in 0.14s
-✔ case_040                       | Fixed at Attempt: 3/3 | 8 passed in 0.33s
-✔ case_043                       | Fixed at Attempt: 2/3 | 10 passed in 0.10s
-✔ case_044                       | Fixed at Attempt: Baseline | 6 passed in 0.07s
-✔ case_051                       | Fixed at Attempt: 1/3 | 8 passed in 0.51s
-✔ case_052                       | Fixed at Attempt: Baseline | 5 passed in 0.06s
-✔ case_055                       | Fixed at Attempt: Baseline | 5 passed in 0.15s
-✔ case_057                       | Fixed at Attempt: 2/3 | 13 passed in 0.44s
-✔ project_002_cmdi               | Fixed at Attempt: 1/3 | 7 passed in 0.07s
-✔ project_003_path_traversal     | Fixed at Attempt: Baseline | 6 passed in 0.08s
+============================================================
+▶ 正在处理目标文件: dataset\case_003_subprocess_shell\vulnerable.py
+============================================================
+[SCANNER] 发现漏洞: CWE-78 位于第 1 行。
+[STRATEGY DB] 未命中。CWE-78 无历史策略，启用 LLM 初始探索。
+[SLICER] 切片提取状态: FALLBACK_TEXT_WINDOW
+[TEST GEN] 正在调用 LLM 生成验证测试套件...
+Generating pytest (functional + security) via LLM...
 
-PS C:\Users\11855\Desktop\language based security\Language_based_security_final_project> python filter_perfect_cases.py
- Case-based Analysis Complete!
- Total Unique Cases Evaluated: 61
- Successfully Fixed Cases: 18
- Failed to Fix: 43
- Final Success Rate: 29.51%
---------------------------------------------------
-Detailed List of Successfully Fixed Projects:
-✔ case_001_eval                  | Fixed at Attempt: Baseline | 13 passed in 0.10s
-✔ case_007_random_module         | Fixed at Attempt: Baseline | 6 passed in 0.08s
-✔ case_009_yaml_load             | Fixed at Attempt: Baseline | 6 passed in 0.15s
-✔ case_014                       | Fixed at Attempt: Baseline | 6 passed in 0.08s
-✔ case_027                       | Fixed at Attempt: 2/3 | 9 passed in 0.12s
-✔ case_028                       | Fixed at Attempt: 2/3 | 11 passed in 0.25s
-✔ case_035                       | Fixed at Attempt: 2/3 | 6 passed in 0.06s
-✔ case_042                       | Fixed at Attempt: Baseline | 6 passed in 0.08s
-✔ case_043                       | Fixed at Attempt: 2/3 | 9 passed in 0.11s
-✔ case_044                       | Fixed at Attempt: Baseline | 6 passed in 0.08s
-✔ case_045                       | Fixed at Attempt: Baseline | 6 passed in 0.08s
-✔ case_046                       | Fixed at Attempt: Baseline | 9 passed in 0.07s
-✔ case_049                       | Fixed at Attempt: 3/3 | 9 passed in 0.09s
-✔ case_051                       | Fixed at Attempt: 1/3 | 12 passed in 0.29s
-✔ case_052                       | Fixed at Attempt: Baseline | 6 passed in 0.06s
-✔ case_055                       | Fixed at Attempt: Baseline | 5 passed in 0.14s
-✔ project_002_cmdi               | Fixed at Attempt: 1/3 | 5 passed in 0.07s
-✔ project_003_path_traversal     | Fixed at Attempt: Baseline | 5 passed in 0.07s
+--- 迭代尝试 1/3 ---
+[LLM 推理]: Replaced shell-based command execution with subprocess.run using a list of arguments to prevent command injection. The function signature is unchanged, and the example invocation now passes separate arguments instead of a shell string.
+[SANDBOX] 正在执行 Guardrail 验证...
+[SANDBOX 失败] Guardrail Rejected: Test Failed
+将错误回溯发送给下一轮迭代。
 
-PS C:\Users\11855\Desktop\language based security\Language_based_security_final_project> python filter_perfect_cases.py
- Case-based Analysis Complete!
- Total Unique Cases Evaluated: 61
- Successfully Fixed Cases: 18
- Failed to Fix: 43
- Final Success Rate: 29.51%
---------------------------------------------------
-Detailed List of Successfully Fixed Projects:
-✔ case_001_eval                  | Fixed at Attempt: Baseline | 13 passed in 0.10s
-✔ case_007_random_module         | Fixed at Attempt: Baseline | 6 passed in 0.07s
-✔ case_008                       | Fixed at Attempt: 2/3 | 10 passed in 0.06s
-✔ case_009_yaml_load             | Fixed at Attempt: Baseline | 9 passed in 0.10s
-✔ case_014                       | Fixed at Attempt: Baseline | 6 passed in 0.08s
-✔ case_021                       | Fixed at Attempt: Baseline | 6 passed in 0.08s
-✔ case_027                       | Fixed at Attempt: 3/3 | 8 passed in 0.08s
-✔ case_028                       | Fixed at Attempt: 2/3 | 8 passed in 0.21s
-✔ case_035                       | Fixed at Attempt: Baseline | 13 passed in 0.09s
-✔ case_039                       | Fixed at Attempt: 2/3 | 6 passed in 0.17s
-✔ case_042                       | Fixed at Attempt: Baseline | 6 passed in 0.07s
-✔ case_043                       | Fixed at Attempt: 1/3 | 11 passed in 0.10s
-✔ case_044                       | Fixed at Attempt: Baseline | 6 passed in 0.07s
-✔ case_046                       | Fixed at Attempt: Baseline | 6 passed in 0.07s
-✔ case_051                       | Fixed at Attempt: 1/3 | 12 passed in 0.49s
-✔ case_052                       | Fixed at Attempt: Baseline | 6 passed in 0.07s
-✔ project_002_cmdi               | Fixed at Attempt: 1/3 | 8 passed in 0.08s
-✔ project_003_path_traversal     | Fixed at Attempt: Baseline | 5 passed in 0.07s
+--- 迭代尝试 2/3 ---
+[LLM 推理]: Replaced shell-based execution with argument-list execution and added minimal validation to prevent shell metacharacter injection while preserving the function signature and intended command execution behavior. The previous failure was environmental (module import path), so the code change focuses only on safe subprocess usage and does not alter package structure or test imports.
+[SANDBOX] 正在执行 Guardrail 验证...
+[SANDBOX 失败] Guardrail Rejected: Test Failed
+将错误回溯发送给下一轮迭代。
 
-PS C:\Users\11855\Desktop\language based security\Language_based_security_final_project> python filter_perfect_cases.py
- Case-based Analysis Complete!
- Total Unique Cases Evaluated: 61
- Successfully Fixed Cases: 18
- Failed to Fix: 43
- Final Success Rate: 29.51%
---------------------------------------------------
-Detailed List of Successfully Fixed Projects:
-✔ case_001_eval                  | Fixed at Attempt: Baseline | 14 passed in 0.11s
-✔ case_007_random_module         | Fixed at Attempt: Baseline | 4 passed in 0.07s
-✔ case_008                       | Fixed at Attempt: 3/3 | 13 passed in 0.07s
-✔ case_009_yaml_load             | Fixed at Attempt: Baseline | 6 passed in 0.10s
-✔ case_014                       | Fixed at Attempt: Baseline | 5 passed in 0.07s
-✔ case_021                       | Fixed at Attempt: Baseline | 6 passed in 0.08s
-✔ case_028                       | Fixed at Attempt: 2/3 | 5 passed in 0.16s
-✔ case_035                       | Fixed at Attempt: Baseline | 7 passed in 0.09s
-✔ case_039                       | Fixed at Attempt: 2/3 | 8 passed in 0.12s
-✔ case_042                       | Fixed at Attempt: Baseline | 6 passed in 0.08s
-✔ case_043                       | Fixed at Attempt: Baseline | 10 passed in 0.09s
-✔ case_044                       | Fixed at Attempt: Baseline | 6 passed in 0.07s
-✔ case_046                       | Fixed at Attempt: Baseline | 6 passed in 0.07s
-✔ case_051                       | Fixed at Attempt: 1/3 | 8 passed in 0.15s
-✔ case_052                       | Fixed at Attempt: Baseline | 6 passed in 0.11s
-✔ case_057                       | Fixed at Attempt: 3/3 | 20 passed in 0.53s
-✔ project_002_cmdi               | Fixed at Attempt: 1/3 | 5 passed in 0.08s
-✔ project_003_path_traversal     | Fixed at Attempt: Baseline | 5 passed in 0.07s
+--- 迭代尝试 3/3 ---
+[LLM 推理]: Replaced shell-based execution with argument-list execution and added POSIX-style parsing plus metacharacter rejection to prevent command chaining. The function signature and return behavior are preserved. The import error shown in the prior run is an environment/test-path issue unrelated to the vulnerability fix, so the patch focuses only on the subprocess usage.
+[SANDBOX] 正在执行 Guardrail 验证...
+[SANDBOX 失败] Guardrail Rejected: Test Failed
+将错误回溯发送给下一轮迭代。
+
+[FAILED] 达到最大尝试次数，未能收敛验证。
+
+============================================================
+▶ 正在处理目标文件: dataset\case_006_pickle_deserialize\vulnerable.py
+============================================================
+[SCANNER] 发现漏洞: CWE-502 位于第 1 行。
+[STRATEGY DB] 未命中。CWE-502 无历史策略，启用 LLM 初始探索。
+[SLICER] 切片提取状态: FALLBACK_TEXT_WINDOW
+[TEST GEN] 正在调用 LLM 生成验证测试套件...
+Generating pytest (functional + security) via LLM...
+
+--- 迭代尝试 1/3 ---
+[LLM 推理]: Replaced unsafe pickle deserialization with a restricted unpickling approach that only allows simple built-in container and scalar types, preserving the function’s input/output behavior for benign data while preventing arbitrary code execution.
+[SANDBOX] 正在执行 Guardrail 验证...
+[SANDBOX 失败] Guardrail Rejected: Test Failed
+将错误回溯发送给下一轮迭代。
+
+--- 迭代尝试 2/3 ---
+[LLM 推理]: Replaced unsafe pickle.loads with a restricted unpickler that only permits harmless built-in container and scalar types. This preserves behavior for safe pickle payloads while blocking arbitrary class/global reconstruction that enables CWE-502. The previous failure was environmental and unrelated to the function logic, so the repair remains focused on safe deserialization.
+[SANDBOX] 正在执行 Guardrail 验证...
+[SANDBOX 失败] Guardrail Rejected: Test Failed
+将错误回溯发送给下一轮迭代。
+
+--- 迭代尝试 3/3 ---
+[LLM 推理]: Replaced unsafe pickle.loads with a restricted unpickler that only permits harmless built-in container and scalar types. This preserves normal safe deserialization while rejecting arbitrary classes, imports, and object reconstruction. The previous failure was environmental (module import path), so the patch focuses only on the function body and keeps the module self-contained.
+[SANDBOX] 正在执行 Guardrail 验证...
+[SANDBOX 失败] Guardrail Rejected: Test Failed
+将错误回溯发送给下一轮迭代。
+
+[FAILED] 达到最大尝试次数，未能收敛验证。
+
+============================================================
+▶ 正在处理目标文件: dataset\case_007_random_module\vulnerable.py
+============================================================
+[SCANNER] 发现漏洞: CWE-330 位于第 4 行。
+[STRATEGY DB] 未命中。CWE-330 无历史策略，启用 LLM 初始探索。
+[SLICER] 切片提取状态: AST_EXACT_MATCH
+[TEST GEN] 正在调用 LLM 生成验证测试套件...
+Generating pytest (functional + security) via LLM...
+
+--- 迭代尝试 1/3 ---
+[LLM 推理]: Replaced the insecure pseudo-random token generation with a cryptographically secure alternative using the secrets module while preserving the function name, signature, and 6-digit token format.
+[SANDBOX] 正在执行 Guardrail 验证...
+[SANDBOX 失败] Guardrail Rejected: Test Failed
+将错误回溯发送给下一轮迭代。
+
+--- 迭代尝试 2/3 ---
+[LLM 推理]: Replaced insecure pseudo-random token generation with a cryptographically secure secrets-based approach while preserving the function signature and the 6-digit numeric token format. The previous failure was an environment/import issue unrelated to the function logic, so the repair remains focused on secure token generation and avoids unnecessary structural changes.
+[SANDBOX] 正在执行 Guardrail 验证...
+[SANDBOX 失败] Guardrail Rejected: Test Failed
+将错误回溯发送给下一轮迭代。
+
+--- 迭代尝试 3/3 ---
+[LLM 推理]: Replaced insecure pseudo-random token generation with the secrets module while preserving the 6-digit numeric output format. The previous failure was an environment/import issue unrelated to the function logic, so the repair remains scoped to the token generator and avoids broader structural changes.
+[SANDBOX] 正在执行 Guardrail 验证...
+[SANDBOX 失败] Guardrail Rejected: Test Failed
+将错误回溯发送给下一轮迭代。
+
+[FAILED] 达到最大尝试次数，未能收敛验证。
+
+============================================================
+▶ 正在处理目标文件: dataset\case_009_yaml_load\vulnerable.py
+============================================================
+[SCANNER] 发现漏洞: CWE-20 位于第 4 行。
+[STRATEGY DB] 未命中。CWE-20 无历史策略，启用 LLM 初始探索。
+[SLICER] 切片提取状态: AST_EXACT_MATCH
+[TEST GEN] 正在调用 LLM 生成验证测试套件...
+Generating pytest (functional + security) via LLM...
+
+--- 迭代尝试 1/3 ---
+[LLM 推理]: Replaced unsafe yaml.load with yaml.safe_load to prevent arbitrary object instantiation while preserving the function’s behavior of parsing YAML input.
+[SANDBOX] 正在执行 Guardrail 验证...
+[SANDBOX 失败] Guardrail Rejected: Test Failed
+将错误回溯发送给下一轮迭代。
+
+--- 迭代尝试 2/3 ---
+[LLM 推理]: Replaced the unsafe YAML loader with yaml.safe_load to prevent arbitrary object instantiation while preserving the function signature and return behavior. The previous failure was environmental (module import path), not caused by the code logic, so the repair focuses only on the unsafe deserialization sink.
+[SANDBOX] 正在执行 Guardrail 验证...
+[SANDBOX 失败] Guardrail Rejected: Test Failed
+将错误回溯发送给下一轮迭代。
+
+--- 迭代尝试 3/3 ---
+[LLM 推理]: Replaced unsafe YAML deserialization with a safe loader to prevent arbitrary object instantiation while keeping the function signature and behavior otherwise unchanged. The previous failure was environmental (missing package path during test collection), so the repair is kept minimal and dependency-compatible without introducing path or import changes beyond the safe YAML API use.
+[SANDBOX] 正在执行 Guardrail 验证...
+[SANDBOX 失败] Guardrail Rejected: Test Failed
+将错误回溯发送给下一轮迭代。
+
+[FAILED] 达到最大尝试次数，未能收敛验证。
+
+============================================================
+▶ 正在处理目标文件: dataset\case_012\vulnerable.py
+============================================================
+[SCANNER] 发现漏洞: CWE-327 位于第 9 行。
+[STRATEGY DB] 未命中。CWE-327 无历史策略，启用 LLM 初始探索。
+[SLICER] 切片提取状态: AST_EXACT_MATCH
+[TEST GEN] 正在调用 LLM 生成验证测试套件...
+Generating pytest (functional + security) via LLM...
+
+--- 迭代尝试 1/3 ---
+[LLM 推理]: Replaced the insecure MD5 digest with SHA-256 while preserving the existing salt-and-password concatenation and return behavior. This removes the weak cryptographic primitive without changing the function signature or business logic.
+[SANDBOX] 正在执行 Guardrail 验证...
+[SANDBOX 失败] Guardrail Rejected: Test Failed
+将错误回溯发送给下一轮迭代。
+
+--- 迭代尝试 2/3 ---
+[LLM 推理]: Replaced the weak MD5-based password digest with a modern PBKDF2-HMAC-SHA256 derivation while preserving the function name, parameters, input validation, and None return behavior. The previous failure was environmental (test import path issue), so the repair is kept self-contained and does not rely on any package layout changes.
+[SANDBOX] 正在执行 Guardrail 验证...
+[SANDBOX 失败] Guardrail Rejected: Test Failed
+将错误回溯发送给下一轮迭代。
+
+--- 迭代尝试 3/3 ---
+[LLM 推理]: Replaced the weak MD5-based password hash with PBKDF2-HMAC-SHA256 while preserving the function signature, empty-input behavior, and hex-string output. The previous failure was environmental (module import path), not caused by the function logic, so the repair remains limited to the vulnerable function and does not attempt unrelated package fixes.
+[SANDBOX] 正在执行 Guardrail 验证...
+[SANDBOX 失败] Guardrail Rejected: Test Failed
+将错误回溯发送给下一轮迭代。
+
+[FAILED] 达到最大尝试次数，未能收敛验证。
+
+============================================================
+▶ 正在处理目标文件: dataset\case_016\vulnerable.py
+============================================================
+[SCANNER] 发现漏洞: CWE-78 位于第 6 行。
+[STRATEGY DB] 未命中。CWE-78 无历史策略，启用 LLM 初始探索。
+[SLICER] 切片提取状态: AST_EXACT_MATCH
+[TEST GEN] 正在调用 LLM 生成验证测试套件...
+Generating pytest (functional + security) via LLM...
+
+--- 迭代尝试 1/3 ---
+[LLM 推理]: Replaced unsafe eval() with ast.literal_eval() to prevent code execution while preserving support for simple literal math-like inputs that evaluate to numeric literals. The function still returns None on invalid input and normalizes numeric results to float when appropriate.
+[SANDBOX] 正在执行 Guardrail 验证...
+[SANDBOX 失败] Guardrail Rejected: Test Failed
+将错误回溯发送给下一轮迭代。
+
+--- 迭代尝试 2/3 ---
+[LLM 推理]: Replaced unsafe eval-based execution with safe literal parsing using ast.literal_eval after validating and stripping the input. This preserves the existing None-on-invalid behavior while preventing code execution. The prior failure was an environment/import issue unrelated to the function logic, so the repair remains focused on safe parsing and unchanged function signature.
+[SANDBOX] 正在执行 Guardrail 验证...
+[SANDBOX 失败] Guardrail Rejected: Test Failed
+将错误回溯发送给下一轮迭代。
+
+--- 迭代尝试 3/3 ---
+[LLM 推理]: Replaced unsafe eval-based execution with safe literal parsing using ast.literal_eval after trimming whitespace and preserving the existing None-on-empty/invalid behavior. This neutralizes code execution while keeping the function signature and return handling intact.
+[SANDBOX] 正在执行 Guardrail 验证...
+[SANDBOX 失败] Guardrail Rejected: Test Failed
+将错误回溯发送给下一轮迭代。
+
+[FAILED] 达到最大尝试次数，未能收敛验证。
+
+============================================================
+▶ 正在处理目标文件: dataset\case_018\vulnerable.py
+============================================================
+[SCANNER] 发现漏洞: CWE-502 位于第 8 行。
+[STRATEGY DB] 未命中。CWE-502 无历史策略，启用 LLM 初始探索。
+[SLICER] 切片提取状态: AST_EXACT_MATCH
+[TEST GEN] 正在调用 LLM 生成验证测试套件...
+Generating pytest (functional + security) via LLM...
+
+--- 迭代尝试 1/3 ---
+[LLM 推理]: Replaced unsafe marshal deserialization with a safer, constrained format using JSON. The function still returns a dictionary or an empty dict, preserving the original business logic while removing the CWE-502 deserialization risk.
+[SANDBOX] 正在执行 Guardrail 验证...
+[SANDBOX 失败] Guardrail Rejected: Test Failed
+将错误回溯发送给下一轮迭代。
+
+--- 迭代尝试 2/3 ---
+[LLM 推理]: Replaced unsafe marshal-based deserialization with JSON parsing, while preserving the original empty-input and dict-only return behavior. The function now safely decodes bytes to text, attempts JSON deserialization, and returns an empty dict for any invalid or non-dictionary cache payload.
+[SANDBOX] 正在执行 Guardrail 验证...
+[SANDBOX 失败] Guardrail Rejected: Test Failed
+将错误回溯发送给下一轮迭代。
+
+--- 迭代尝试 3/3 ---
+[LLM 推理]: Replaced unsafe marshal-based deserialization with constrained JSON parsing from UTF-8 bytes, while preserving the empty-dictionary fallback and dict-only return behavior. The previous failure was environmental (module import path), so the code change focuses on being sandbox-safe and dependency-free.
+[SANDBOX] 正在执行 Guardrail 验证...
+[SANDBOX 失败] Guardrail Rejected: Test Failed
+将错误回溯发送给下一轮迭代。
+
+[FAILED] 达到最大尝试次数，未能收敛验证。
+
+============================================================
+▶ 正在处理目标文件: dataset\case_019\vulnerable.py
+============================================================
+[SCANNER] 发现漏洞: CWE-327 位于第 1 行。
+[STRATEGY DB] 未命中。CWE-327 无历史策略，启用 LLM 初始探索。
+[SLICER] 切片提取状态: FALLBACK_TEXT_WINDOW
+[TEST GEN] 正在调用 LLM 生成验证测试套件...
+Generating pytest (functional + security) via LLM...
+
+--- 迭代尝试 1/3 ---
+[LLM 推理]: Replaced deprecated DES/ECB usage with a modern authenticated encryption approach using AES-GCM from the pyca/cryptography library. The key is now derived securely from the provided key material using PBKDF2-HMAC-SHA256, while preserving the function signature and overall behavior of encrypting the plaintext for storage.
+[ENVIRONMENT] 动态安装缺失的依赖: cryptography
+[SANDBOX] 正在执行 Guardrail 验证...
+[SANDBOX 失败] Guardrail Rejected: Test Failed
+将错误回溯发送给下一轮迭代。
+
+--- 迭代尝试 2/3 ---
+[LLM 推理]: Replaced the deprecated DES/pyCrypto usage with a modern authenticated encryption scheme using pyca/cryptography. The function signature and return type are preserved, key material is validated and normalized to a secure AES-256 key via PBKDF2-HMAC-SHA256, and the output includes a random salt and nonce so the ciphertext can be safely stored and later decrypted if needed. This also removes the import-time dependency on the unavailable Crypto package.
+[ENVIRONMENT] 动态安装缺失的依赖: cryptography
+[SANDBOX] 正在执行 Guardrail 验证...
+[SANDBOX 失败] Guardrail Rejected: Test Failed
+将错误回溯发送给下一轮迭代。
+
+--- 迭代尝试 3/3 ---
+[LLM 推理]: Replaced the deprecated Crypto/DES dependency with a self-contained implementation using pyca/cryptography primitives. The function now derives an AES-256 key from the provided key using PBKDF2-HMAC-SHA256 with a random salt, encrypts with AES-GCM, and returns a compact byte payload containing salt, nonce, and ciphertext. This preserves the function signature while removing weak ECB/DES usage and avoiding reliance on the unavailable Crypto package.
+[ENVIRONMENT] 动态安装缺失的依赖: cryptography
+[SANDBOX] 正在执行 Guardrail 验证...
+[SANDBOX 失败] Guardrail Rejected: Test Failed
+将错误回溯发送给下一轮迭代。
+
+[FAILED] 达到最大尝试次数，未能收敛验证。
+
+============================================================
+▶ 正在处理目标文件: dataset\case_023\vulnerable.py
+============================================================
+[SCANNER] 发现漏洞: CWE-78 位于第 10 行。
+[STRATEGY DB] 未命中。CWE-78 无历史策略，启用 LLM 初始探索。
+[SLICER] 切片提取状态: AST_EXACT_MATCH
+[TEST GEN] 正在调用 LLM 生成验证测试套件...
+Generating pytest (functional + security) via LLM...
+
+--- 迭代尝试 1/3 ---
+[LLM 推理]: Replaced unsafe exec-based execution with a restricted, non-executing template renderer that only performs safe placeholder substitution from validated context keys. This preserves the function’s purpose of rendering user-supplied template content while removing code execution risk.
+[SANDBOX] 正在执行 Guardrail 验证...
+[SANDBOX 失败] Guardrail Rejected: Test Failed
+将错误回溯发送给下一轮迭代。
+
+--- 迭代尝试 2/3 ---
+[LLM 推理]: Replaced unsafe exec-based template execution with deterministic, non-executable placeholder substitution over an allowlisted context. This preserves the intended business behavior of rendering simple user templates while eliminating code execution risk.
+[SANDBOX] 正在执行 Guardrail 验证...
+[SANDBOX 失败] Guardrail Rejected: Test Failed
+将错误回溯发送给下一轮迭代。
+
+--- 迭代尝试 3/3 ---
+[LLM 推理]: Replaced unsafe exec-based execution with deterministic placeholder substitution over an allowlisted context. The function now validates inputs, preserves the existing allowed_keys filtering, supports simple {{key}} and {key} replacements, and returns an empty string on invalid input or unexpected errors. This removes code execution while keeping the template-rendering behavior data-only.
+[SANDBOX] 正在执行 Guardrail 验证...
+Traceback (most recent call last):
+  File "C:\Users\11855\Desktop\language based security\Language_based_security_final_project\main.py", line 335, in <module>
+    main()
+    ~~~~^^
+  File "C:\Users\11855\Desktop\language based security\Language_based_security_final_project\main.py", line 324, in main
+    is_fixed = run_surgical_patch_pipeline(file_path, db)
+  File "C:\Users\11855\Desktop\language based security\Language_based_security_final_project\main.py", line 235, in run_surgical_patch_pipeline
+    dynamic_passed, msg, report_dict = verify_patch(
+                                       ~~~~~~~~~~~~^
+        file_path=file_path,
+        ^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+        project_path=project_dir
+        ^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\11855\Desktop\language based security\Language_based_security_final_project\guardrail_manager.py", line 24, in verify_patch
+    result = subprocess.run(
+        ["python", "-m", "pytest", abs_test_path, "-v"],
+    ...<3 lines>...
+        cwd=abs_project_path,
+    )
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3568.0_x64__qbz5n2kfra8p0\Lib\subprocess.py", line 556, in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+                     ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3568.0_x64__qbz5n2kfra8p0\Lib\subprocess.py", line 1222, in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+                     ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3568.0_x64__qbz5n2kfra8p0\Lib\subprocess.py", line 1663, in _communicate
+    self.stdout_thread.join(self._remaining_time(endtime))
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3568.0_x64__qbz5n2kfra8p0\Lib\threading.py", line 1095, in join
+    self._handle.join(timeout)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^
+KeyboardInterrupt

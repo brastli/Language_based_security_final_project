@@ -1,7 +1,8 @@
-import secrets
+import random
+
 
 def getSessionID():
     '''
     Return a random and unique session ID.
     '''
-    return secrets.randbits(32)
+    return random.randint(0, 0xFFFFFFFF)
