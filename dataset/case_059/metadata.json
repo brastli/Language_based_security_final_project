@@ -1,0 +1,10 @@
+{
+  "case_id": "case_059",
+  "cwe": "CWE-80",
+  "bandit_rule": "B703",
+  "source": "django_vulnerabilities",
+  "vulnerability_type": "XSS",
+  "vulnerable_function": "mark_safe",
+  "description": "Unsafe use of Django's mark_safe() on user-controlled input leading to Cross-Site Scripting (XSS)",
+  "django_issue": "django-11149"
+}

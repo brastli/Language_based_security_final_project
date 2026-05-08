@@ -1,0 +1,8 @@
+{
+  "case_id": "case_064",
+  "exported_case_id": "case_005_CVE-2021-21371_cli",
+  "cve_id": "CVE-2021-21371",
+  "cwe": "CWE-502",
+  "bandit_rule": "B506",
+  "cross_function_note": "load_config_stream is the sink; base_config_stub/dict_merge_stub are decoys mimicking surrounding cli helpers."
+}

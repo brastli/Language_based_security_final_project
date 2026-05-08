@@ -1,5 +1,6 @@
-from flask import request
+from flask import Flask, request
 import yaml
+
 app = Flask(__name__)
 
 @app.route('/yaml')

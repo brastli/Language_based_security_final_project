@@ -1,0 +1,10 @@
+{
+  "case_id": "case_076_internal_export_pipeline",
+  "source": "synthetic_enterprise_benchmark",
+  "difficulty": "extreme",
+  "cve_id": null,
+  "cwe_id": "CWE-502;CWE-78",
+  "description": "Synthetic internal ops module: legacy pickle job blobs + shell-composed export pipelines. Multiple sinks across call chains.",
+  "bandit_issue_count_hint": "multiple B301/B602 plus related",
+  "notes": "Designed for SurgicalPatch: >500 LOC, 2+ weaknesses, cross-function data flow. Tests require patch or expect failures on baseline."
+}

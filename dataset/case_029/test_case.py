@@ -1,52 +1,30 @@
-# Auto-generated smoke test (SecurityEval import). Refine inputs if needed.
+import sys
+from pathlib import Path
 
-import inspect
-import tempfile
+_ROOT = str(Path(__file__).resolve().parent)
+if _ROOT not in sys.path:
+    sys.path.insert(0, _ROOT)
+sys.modules.pop("vulnerable", None)
 
 import pytest
+pytest.importorskip("flask")
 
-from vulnerable import executeCommand
+"""Flask os.system — POST 命令刻画 + 路由处理不得保留 os.system。"""
 
+import inspect
+from unittest.mock import patch
 
-def _dummy_value(param_name: str, param: inspect.Parameter):
-    if param.default is not inspect.Parameter.empty:
-        return None
-    n = param_name.lower()
-    if any(x in n for x in ("path", "file", "filename", "filepath", "dir", "directory")):
-        return tempfile.NamedTemporaryFile(prefix="se_", delete=False, suffix=".txt").name
-    if "port" in n:
-        return 49152
-    if any(x in n for x in ("host", "url", "uri", "endpoint", "address")):
-        return "http://127.0.0.1:9/"
-    if any(x in n for x in ("cmd", "command", "shell")):
-        return "true"
-    if any(x in n for x in ("data", "content", "body", "text", "input", "query", "payload", "name", "user")):
-        return "test"
-    if any(x in n for x in ("key", "secret", "password", "token")):
-        return "dummy"
-    if any(x in n for x in ("id", "num", "count", "size", "age", "year", "index", "limit", "offset")):
-        return 1
-    return "test"
+import vulnerable as v
 
 
-def test_smoke_call():
-    sig = inspect.signature(executeCommand)
-    args: list = []
-    kwargs: dict = {}
-    for pname, p in sig.parameters.items():
-        if p.kind in (inspect.Parameter.VAR_POSITIONAL, inspect.Parameter.VAR_KEYWORD):
-            continue
-        if p.kind == inspect.Parameter.KEYWORD_ONLY:
-            v = _dummy_value(pname, p)
-            if v is None:
-                continue
-            kwargs[pname] = v
-            continue
-        v = _dummy_value(pname, p)
-        if v is None:
-            continue
-        args.append(v)
-    try:
-        executeCommand(*args, **kwargs)
-    except Exception:
-        pytest.skip("smoke call not applicable in this environment")
+def test_post_command_triggers_system_call():
+    v.app.testing = True
+    with patch("os.system") as m:
+        with v.app.test_client() as client:
+            client.post("/command?action=echo+ok")
+        m.assert_called_once()
+
+
+def test_route_must_not_use_os_system():
+    src = inspect.getsource(v.executeCommand)
+    assert "os.system" not in src

@@ -1,52 +1,33 @@
-# Auto-generated smoke test (SecurityEval import). Refine inputs if needed.
+import sys
+from pathlib import Path
 
-import inspect
-import tempfile
+_ROOT = str(Path(__file__).resolve().parent)
+if _ROOT not in sys.path:
+    sys.path.insert(0, _ROOT)
+sys.modules.pop("vulnerable", None)
+
+"""数据库口令比对 — 用户不存在 + 须使用慢哈希校验而非明文/base64 比对。"""
+
+from unittest.mock import MagicMock, patch
 
 import pytest
+
+pytest.importorskip("MySQLdb")
 
 from vulnerable import checkPassword
 
 
-def _dummy_value(param_name: str, param: inspect.Parameter):
-    if param.default is not inspect.Parameter.empty:
-        return None
-    n = param_name.lower()
-    if any(x in n for x in ("path", "file", "filename", "filepath", "dir", "directory")):
-        return tempfile.NamedTemporaryFile(prefix="se_", delete=False, suffix=".txt").name
-    if "port" in n:
-        return 49152
-    if any(x in n for x in ("host", "url", "uri", "endpoint", "address")):
-        return "http://127.0.0.1:9/"
-    if any(x in n for x in ("cmd", "command", "shell")):
-        return "true"
-    if any(x in n for x in ("data", "content", "body", "text", "input", "query", "payload", "name", "user")):
-        return "test"
-    if any(x in n for x in ("key", "secret", "password", "token")):
-        return "dummy"
-    if any(x in n for x in ("id", "num", "count", "size", "age", "year", "index", "limit", "offset")):
-        return 1
-    return "test"
+def test_returns_false_when_user_missing():
+    mock_db = MagicMock()
+    mock_cursor = MagicMock()
+    mock_cursor.fetchone.return_value = None
+    mock_db.cursor.return_value = mock_cursor
+    with patch("MySQLdb.connect", return_value=mock_db):
+        assert checkPassword("nouser", "pw") is False
 
 
-def test_smoke_call():
-    sig = inspect.signature(checkPassword)
-    args: list = []
-    kwargs: dict = {}
-    for pname, p in sig.parameters.items():
-        if p.kind in (inspect.Parameter.VAR_POSITIONAL, inspect.Parameter.VAR_KEYWORD):
-            continue
-        if p.kind == inspect.Parameter.KEYWORD_ONLY:
-            v = _dummy_value(pname, p)
-            if v is None:
-                continue
-            kwargs[pname] = v
-            continue
-        v = _dummy_value(pname, p)
-        if v is None:
-            continue
-        args.append(v)
-    try:
-        checkPassword(*args, **kwargs)
-    except Exception:
-        pytest.skip("smoke call not applicable in this environment")
+def test_must_use_password_hash_verify_not_plain_compare():
+    import inspect
+
+    src = inspect.getsource(checkPassword).lower()
+    assert "bcrypt" in src or "argon2" in src or "pbkdf2" in src or "scrypt" in src

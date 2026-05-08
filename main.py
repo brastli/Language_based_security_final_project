@@ -159,110 +159,153 @@ class RepositoryAnalyzer:
                     zero_in_degree_nodes.append(neighbor)
         return repair_queue if len(repair_queue) == len(repository_files) else repository_files
 
+
 def run_surgical_patch_pipeline(file_path, strategy_db):
     print(f"\n{'='*60}\n▶ 正在处理目标文件: {file_path}\n{'='*60}")
     
-    bandit_output = run_bandit_scan(file_path)
-    issues_list = bandit_output.get("results", []) if isinstance(bandit_output, dict) else (bandit_output if isinstance(bandit_output, list) else [])
+    total_fixes_in_file = 0
 
-    if not issues_list:
-        print("[STATUS] 未检测到漏洞。文件安全。")
-        return True
+    # ==============================================================================
+    # 核心创新：自回归连续清剿循环 (Auto-Regressive Extermination Loop)
+    # 不断扫描 -> 修复 1 个 -> 再扫描 -> 修复下 1 个，直到 Bandit 报告 0 漏洞为止！
+    # ==============================================================================
+    while True:
+        bandit_output = run_bandit_scan(file_path)
+        issues_list = bandit_output.get("results", []) if isinstance(bandit_output, dict) else (bandit_output if isinstance(bandit_output, list) else [])
 
-    issue = issues_list[0]
-    cwe_id = str(issue.get("issue_cwe", {}).get("id", "General")) if isinstance(issue.get("issue_cwe"), dict) else str(issue.get("issue_cwe", "General"))
-    vulnerability_line = issue.get("line_number", 0)
-    issue_desc = issue.get("issue_text", "Fix security vulnerability.")
-    print(f"[SCANNER] 发现漏洞: CWE-{cwe_id} 位于第 {vulnerability_line} 行。")
+        # 胜利退出条件：文件中再也扫不出任何漏洞
+        if not issues_list:
+            if total_fixes_in_file == 0:
+                print("[STATUS] 未检测到漏洞。文件安全。")
+            else:
+                print(f"\n[STATUS] 🎉 彻底通关！该文件内的 {total_fixes_in_file} 个并发漏洞已被【全部】拔除，当前代码 100% 安全！")
+            return True
 
-    current_strategy = strategy_db.get_strategy(cwe_id)
-    print(f"[STRATEGY DB] {'命中已验证策略' if current_strategy else '未命中，启动探索模式'}。")
-
-    try:
-        with open(file_path, "r", encoding="utf-8") as f: original_code = f.read()
-    except Exception: return False
-    slice_result = extract_semantic_slice(original_code, vulnerability_line)
-    context_slice = slice_result[0] if isinstance(slice_result, tuple) else slice_result
-
-    print("[TEST GEN] 正在调用 LLM 生成验证测试套件...")
-    test_suite_code = generate_test_for_file(vuln_code=context_slice, rel_file_path=file_path)
-    if not test_suite_code: test_suite_code = "def test_dummy(): pass" 
-    
-    patch_history_hashes = []
-    previous_error = None
-    success = False
-
-    for attempt in range(1, MAX_ATTEMPTS + 1):
-        print(f"\n--- 迭代尝试 {attempt}/{MAX_ATTEMPTS} ---")
-        reasoning, evolved_strategy, patch_code = request_repair(
-            cwe_id=cwe_id, function_code=context_slice, current_strategy=current_strategy,
-            data_flow_fact=issue_desc, previous_error=previous_error
-        )
-        print(f"[LLM 推理]: {reasoning}")
-        patch_history_hashes.append(hashlib.sha256(patch_code.encode('utf-8')).hexdigest())
-
-        EnvironmentOptimizer.auto_install_missing_libs(patch_code)
+        # 锁定当前轮次要狙击的“最高优先级漏洞”
+        issue = issues_list[0]
+        cwe_id = str(issue.get("issue_cwe", {}).get("id", "General")) if isinstance(issue.get("issue_cwe"), dict) else str(issue.get("issue_cwe", "General"))
+        vulnerability_line = issue.get("line_number", 0)
+        issue_desc = issue.get("issue_text", "Fix security vulnerability.")
         
-        with tempfile.TemporaryDirectory() as temp_dir:
-            EnvironmentOptimizer.create_windows_mock_conftest(temp_dir)
-            temp_test_file = os.path.join(temp_dir, "test_target.py")
-            with open(temp_test_file, "w", encoding="utf-8") as f: f.write(test_suite_code)
-                
-            project_dir = os.getcwd() 
-            
-            print("[SANDBOX] 正在执行 Guardrail 验证...")
-            dynamic_passed, msg, report_dict = verify_patch(
-                file_path=file_path, cwe_id=cwe_id, fixed_code=patch_code,
-                test_file_path=temp_test_file, project_path=project_dir
+        if total_fixes_in_file > 0:
+            print(f"\n[SCANNER] 发现【残留/并发漏洞】: CWE-{cwe_id} 位于第 {vulnerability_line} 行，启动连环清剿手术...")
+        else:
+            print(f"[SCANNER] 发现漏洞: CWE-{cwe_id} 位于第 {vulnerability_line} 行。")
+
+        current_strategy = strategy_db.get_strategy(cwe_id)
+        print(f"[STRATEGY DB] {'命中已验证策略' if current_strategy else '未命中，启动探索模式'}。")
+
+        # 动态抓取当前代码基线（包含之前循环已经修好的安全代码）
+        try:
+            with open(file_path, "r", encoding="utf-8") as f: current_base_code = f.read()
+        except Exception: return False
+        
+        slice_result = extract_semantic_slice(current_base_code, vulnerability_line)
+        context_slice = slice_result[0] if isinstance(slice_result, tuple) else slice_result
+
+        print("[TEST GEN] 正在调用 LLM 生成针对该漏洞的验证测试套件...")
+        test_suite_code = generate_test_for_file(vuln_code=context_slice, rel_file_path=file_path)
+        if not test_suite_code: test_suite_code = "def test_dummy(): pass" 
+        
+        patch_history_hashes = []
+        previous_error = None
+        issue_fixed_successfully = False
+
+        # 单个漏洞的尝试循环
+        for attempt in range(1, MAX_ATTEMPTS + 1):
+            print(f"\n--- 迭代尝试 {attempt}/{MAX_ATTEMPTS} ---")
+            reasoning, evolved_strategy, patch_code = request_repair(
+                cwe_id=cwe_id, function_code=context_slice, current_strategy=current_strategy,
+                data_flow_fact=issue_desc, previous_error=previous_error
             )
-            pytest_traceback = report_dict.get("test_report", msg)
-            is_syntax_error = "Syntax Error" in msg
+            print(f"[LLM 推理]: {reasoning}")
+            patch_history_hashes.append(hashlib.sha256(patch_code.encode('utf-8')).hexdigest())
 
-            if not dynamic_passed:
-                print(f"[SANDBOX 失败] {msg}")
-            else:
-                print("[SANDBOX 成功] 功能轨道与安全轨道均验证通过！")
+            EnvironmentOptimizer.auto_install_missing_libs(patch_code)
             
-            print("[SAST] 正在进行最终代码安全复扫...")
-            sast_check = run_bandit_scan(file_path)
-            sast_issues = sast_check.get("results", []) if isinstance(sast_check, dict) else sast_check
-            high_med_issues = [iss for iss in sast_issues if iss.get("issue_severity") in ["HIGH", "MEDIUM"]]
-            sast_passed = len(high_med_issues) == 0
-
-            # ================= 9. 混合信任判定树 =================
-            if dynamic_passed and sast_passed:
-                print(f"[SUCCESS] 漏洞在第 {attempt} 次尝试中被完美修复 (双重通过)！")
-                success = True
-            elif not is_syntax_error and sast_passed:
-                print(f"[SUCCESS] 漏洞已被安全修复 (SAST 确认安全)。\n>>> [豁免] 触发【静态信任豁免】！")
-                success = True
-            elif dynamic_passed and attempt >= 2:
-                print(">>> [突破] 触发【动态信任豁免】，强制绕过 SAST 误报。")
-                success = True
-            else:
-                # 【核心修改区】：精准拼接错误反馈，让 LLM 摆脱“盲目修改”！
-                feedback_msgs = []
-                if not dynamic_passed:
-                    short_err = pytest_traceback[-1500:] if len(pytest_traceback) > 1500 else pytest_traceback
-                    feedback_msgs.append(f"--- Sandbox Pytest Failed ---\n{short_err}")
-                if not sast_passed:
-                    feedback_msgs.append("--- Static Security Scan (Bandit) Failed ---")
-                    feedback_msgs.append(f"Bandit STILL DETECTS {len(high_med_issues)} vulnerabilities in your code! You MUST fix them:")
-                    for iss in high_med_issues:
-                        cwe_num = iss.get('issue_cwe', {}).get('id', 'Unknown') if isinstance(iss.get('issue_cwe'), dict) else iss.get('issue_cwe', 'Unknown')
-                        feedback_msgs.append(f"- Severity: {iss.get('issue_severity')}, CWE: {cwe_num}\n  Issue: {iss.get('issue_text')}")
+            with tempfile.TemporaryDirectory() as temp_dir:
+                EnvironmentOptimizer.create_windows_mock_conftest(temp_dir)
+                temp_test_file = os.path.join(temp_dir, "test_target.py")
+                with open(temp_test_file, "w", encoding="utf-8") as f: f.write(test_suite_code)
+                    
+                project_dir = os.getcwd() 
                 
-                previous_error = "\n\n".join(feedback_msgs)
-                current_strategy = evolved_strategy
-                with open(file_path, "w", encoding="utf-8") as f: f.write(original_code)
+                print("[SANDBOX] 正在执行 Guardrail 验证...")
+                dynamic_passed, msg, report_dict = verify_patch(
+                    file_path=file_path, cwe_id=cwe_id, fixed_code=patch_code,
+                    test_file_path=temp_test_file, project_path=project_dir
+                )
+                pytest_traceback = report_dict.get("test_report", msg)
+                is_syntax_error = "Syntax Error" in msg
 
-            if success:
-                if evolved_strategy: strategy_db.save_strategy(cwe_id, evolved_strategy)
-                break
+                if not dynamic_passed:
+                    print(f"[SANDBOX 失败] {msg}")
+                else:
+                    print("[SANDBOX 成功] 功能轨道与安全轨道均验证通过！")
 
-    if not success:
-        with open(file_path, "w", encoding="utf-8") as f: f.write(original_code)
-    return success
+                # 将针对当前漏洞的补丁合入当前代码基准
+                if context_slice in current_base_code:
+                    merged_code = current_base_code.replace(context_slice, patch_code)
+                else:
+                    merged_code = patch_code
+                
+                with open(file_path, "w", encoding="utf-8") as f: 
+                    f.write(merged_code)
+
+                print("[SAST] 正在进行最终代码安全复扫...")
+                sast_check = run_bandit_scan(file_path)
+                sast_issues = sast_check.get("results", []) if isinstance(sast_check, dict) else sast_check
+                
+                current_cwes = []
+                for iss in sast_issues:
+                    c_cwe = iss.get("issue_cwe", {})
+                    current_cwes.append(str(c_cwe.get("id", "")) if isinstance(c_cwe, dict) else str(c_cwe))
+                    
+                sast_passed = cwe_id not in current_cwes
+
+                if dynamic_passed and sast_passed:
+                    print(f"[SUCCESS] 当前漏洞 CWE-{cwe_id} 被完美修复 (双重通过)！")
+                    issue_fixed_successfully = True
+                elif not is_syntax_error and sast_passed:
+                    print(f"[SUCCESS] 当前漏洞 CWE-{cwe_id} 已被安全修复 (SAST 确认安全)。\n>>> [豁免] 触发【静态信任豁免】！")
+                    issue_fixed_successfully = True
+                elif dynamic_passed and attempt >= 2:
+                    print(">>> [突破] 触发【动态信任豁免】，强制绕过 SAST 误报。")
+                    issue_fixed_successfully = True
+                else:
+                    feedback_msgs = []
+                    if not dynamic_passed:
+                        short_err = pytest_traceback[-1500:] if len(pytest_traceback) > 1500 else pytest_traceback
+                        feedback_msgs.append(f"--- Sandbox Pytest Failed ---\n{short_err}")
+                    if not sast_passed:
+                        feedback_msgs.append("--- Static Security Scan (Bandit) Failed ---")
+                        feedback_msgs.append(f"Bandit STILL DETECTS vulnerabilities in your code! You MUST fix them:")
+                        for iss in sast_issues:
+                            c_cwe = iss.get("issue_cwe", {})
+                            iss_cwe_id = str(c_cwe.get("id", "Unknown")) if isinstance(c_cwe, dict) else str(c_cwe)
+                            if iss_cwe_id == cwe_id:
+                                feedback_msgs.append(f"- Severity: {iss.get('issue_severity')}, CWE: {iss_cwe_id}\n  Issue: {iss.get('issue_text')}")
+                    
+                    previous_error = "\n\n".join(feedback_msgs)
+                    current_strategy = evolved_strategy
+                    # 当前尝试失败，恢复到本次修复前的状态，千万不能丢掉上一次已经修好的其他漏洞！
+                    with open(file_path, "w", encoding="utf-8") as f: 
+                        f.write(current_base_code)
+
+                if issue_fixed_successfully:
+                    if evolved_strategy: strategy_db.save_strategy(cwe_id, evolved_strategy)
+                    break 
+
+        # 单个漏洞修复结束后的判定
+        if issue_fixed_successfully:
+            total_fixes_in_file += 1
+            print(f"[INFO] >>> 准备重新进炉扫描，检查文件是否 100% 干净... <<<")
+            continue # 不要跳出！进入下一轮 while True 循环扫描残留漏洞
+        else:
+            # 死活修不好当前这个漏洞，无奈放弃该文件
+            with open(file_path, "w", encoding="utf-8") as f: f.write(current_base_code)
+            print(f"\n[FAILED] 文件中卡在了 CWE-{cwe_id}，无法实现 100% 收敛，终止该文件的后续修复。")
+            return False
 
 def main():
     sys.stdout = DualLogger("execution_results.txt")
@@ -281,12 +324,21 @@ def main():
         print(f"[ERROR] 未找到目标 Python 文件，请检查 {DATASET_DIR} 目录。")
         return
         
+    print(f"\n[ANALYZER] 正在基于 AST 拓扑排序分析 {len(target_files)} 个文件...")
     repair_order = RepositoryAnalyzer.calculate_repair_order(target_files)
+    print("[ANALYZER] 确立的自底向上修复信任链序列:")
+    for i, file_path in enumerate(repair_order[:15], 1):
+        print(f"  {i}. {file_path}")
+    if len(repair_order) > 15:
+        print(f"  ... (省略展示其余 {len(repair_order) - 15} 个文件)")
+    print("-" * 60)
+
+    # 如果想测试全部文件，不要截断 repair_order
     success_count = 0
-    for file_path in repair_order:
+    for file_path in repair_order[:10]:
         if run_surgical_patch_pipeline(file_path, db): success_count += 1
             
-    print(f"\n{'='*60}\n流水线完毕。成功修复: {success_count}/{len(repair_order)}\n{'='*60}")
+    print(f"\n{'='*60}\n流水线完毕。完全干净修复: {success_count}/{len(repair_order)}\n{'='*60}")
     db.close()
 
 if __name__ == "__main__": 

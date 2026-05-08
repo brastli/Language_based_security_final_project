@@ -1,0 +1,7 @@
+{
+  "case_id": "case_072",
+  "exported_case_id": "case_013_CVE-2023-42458_Image",
+  "cve_id": "CVE-2023-42458",
+  "bandit_rule": "B318",
+  "cross_function_note": "parse_xml_metadata sink vs image_dimensions_placeholder/normalize_filename_stub."
+}

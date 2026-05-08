@@ -1,0 +1,10 @@
+{
+  "case_id": "case_062",
+  "cwe": "CWE-94",
+  "bandit_rule": "B301",
+  "source": "exported_cve_cases",
+  "exported_case_id": "case_002_CVE-2016-1000003_xmlrpc",
+  "cve_id": "CVE-2016-1000003",
+  "vulnerability_type": "Unsafe deserialization",
+  "description": "pickle.loads on untrusted checkin payload (mirrormanager2 xmlrpc); reference fix tries json.loads first."
+}

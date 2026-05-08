@@ -1,52 +1,26 @@
-# Auto-generated smoke test (SecurityEval import). Refine inputs if needed.
+import sys
+from pathlib import Path
+
+_ROOT = str(Path(__file__).resolve().parent)
+if _ROOT not in sys.path:
+    sys.path.insert(0, _ROOT)
+sys.modules.pop("vulnerable", None)
+
+"""tempfile.mktemp — 写入字节刻画 + 禁止 mktemp。"""
 
 import inspect
-import tempfile
-
-import pytest
+from unittest.mock import patch
 
 from vulnerable import write_results
 
 
-def _dummy_value(param_name: str, param: inspect.Parameter):
-    if param.default is not inspect.Parameter.empty:
-        return None
-    n = param_name.lower()
-    if any(x in n for x in ("path", "file", "filename", "filepath", "dir", "directory")):
-        return tempfile.NamedTemporaryFile(prefix="se_", delete=False, suffix=".txt").name
-    if "port" in n:
-        return 49152
-    if any(x in n for x in ("host", "url", "uri", "endpoint", "address")):
-        return "http://127.0.0.1:9/"
-    if any(x in n for x in ("cmd", "command", "shell")):
-        return "true"
-    if any(x in n for x in ("data", "content", "body", "text", "input", "query", "payload", "name", "user")):
-        return "test"
-    if any(x in n for x in ("key", "secret", "password", "token")):
-        return "dummy"
-    if any(x in n for x in ("id", "num", "count", "size", "age", "year", "index", "limit", "offset")):
-        return 1
-    return "test"
+def test_writes_utf8_to_temp_file(tmp_path):
+    out = tmp_path / "out.bin"
+    with patch("tempfile.mktemp", return_value=str(out)):
+        write_results("hi")
+    assert out.read_bytes() == b"hi"
 
 
-def test_smoke_call():
-    sig = inspect.signature(write_results)
-    args: list = []
-    kwargs: dict = {}
-    for pname, p in sig.parameters.items():
-        if p.kind in (inspect.Parameter.VAR_POSITIONAL, inspect.Parameter.VAR_KEYWORD):
-            continue
-        if p.kind == inspect.Parameter.KEYWORD_ONLY:
-            v = _dummy_value(pname, p)
-            if v is None:
-                continue
-            kwargs[pname] = v
-            continue
-        v = _dummy_value(pname, p)
-        if v is None:
-            continue
-        args.append(v)
-    try:
-        write_results(*args, **kwargs)
-    except Exception:
-        pytest.skip("smoke call not applicable in this environment")
+def test_must_not_use_mktemp():
+    src = inspect.getsource(write_results)
+    assert "mktemp" not in src

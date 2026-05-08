@@ -1,0 +1,9 @@
+{
+  "case_id": "case_079_metrics_sql_shell_hub",
+  "source": "synthetic_enterprise_benchmark",
+  "difficulty": "extreme",
+  "cve_id": null,
+  "cwe_id": "CWE-89;CWE-78",
+  "description": "Synthetic metrics warehouse: dynamic SQLite fragments + nightly gzip export composed as shell strings.",
+  "notes": ">500 LOC; SQLi and shell sinks across multiple hops; tests fail on baseline until patched."
+}

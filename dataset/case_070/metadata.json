@@ -1,0 +1,7 @@
+{
+  "case_id": "case_070",
+  "exported_case_id": "case_011_CVE-2022-0845_argparse",
+  "cve_id": "CVE-2022-0845",
+  "bandit_rule": "B307",
+  "cross_function_note": "parse_cli_value (sink) vs str_to_bool_stub/collect_init_args_stub."
+}

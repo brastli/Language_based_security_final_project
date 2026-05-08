@@ -1,0 +1,7 @@
+{
+  "case_id": "case_068",
+  "exported_case_id": "case_009_CVE-2021-4118_saving",
+  "cve_id": "CVE-2021-4118",
+  "bandit_rule": "B506",
+  "cross_function_note": "load_hparams_from_yaml_text vs load_tags_csv_stub/save_hparams_dummy."
+}

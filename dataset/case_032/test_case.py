@@ -1,52 +1,31 @@
-# Auto-generated smoke test (SecurityEval import). Refine inputs if needed.
+import sys
+from pathlib import Path
 
-import inspect
-import tempfile
+_ROOT = str(Path(__file__).resolve().parent)
+if _ROOT not in sys.path:
+    sys.path.insert(0, _ROOT)
+sys.modules.pop("vulnerable", None)
 
-import pytest
+"""SQL 拼接 SELECT — 返回一行 + 参数绑定。"""
 
-from vulnerable import get_connection
+from unittest.mock import MagicMock, patch
 
-
-def _dummy_value(param_name: str, param: inspect.Parameter):
-    if param.default is not inspect.Parameter.empty:
-        return None
-    n = param_name.lower()
-    if any(x in n for x in ("path", "file", "filename", "filepath", "dir", "directory")):
-        return tempfile.NamedTemporaryFile(prefix="se_", delete=False, suffix=".txt").name
-    if "port" in n:
-        return 49152
-    if any(x in n for x in ("host", "url", "uri", "endpoint", "address")):
-        return "http://127.0.0.1:9/"
-    if any(x in n for x in ("cmd", "command", "shell")):
-        return "true"
-    if any(x in n for x in ("data", "content", "body", "text", "input", "query", "payload", "name", "user")):
-        return "test"
-    if any(x in n for x in ("key", "secret", "password", "token")):
-        return "dummy"
-    if any(x in n for x in ("id", "num", "count", "size", "age", "year", "index", "limit", "offset")):
-        return 1
-    return "test"
+from vulnerable import show_user
 
 
-def test_smoke_call():
-    sig = inspect.signature(get_connection)
-    args: list = []
-    kwargs: dict = {}
-    for pname, p in sig.parameters.items():
-        if p.kind in (inspect.Parameter.VAR_POSITIONAL, inspect.Parameter.VAR_KEYWORD):
-            continue
-        if p.kind == inspect.Parameter.KEYWORD_ONLY:
-            v = _dummy_value(pname, p)
-            if v is None:
-                continue
-            kwargs[pname] = v
-            continue
-        v = _dummy_value(pname, p)
-        if v is None:
-            continue
-        args.append(v)
-    try:
-        get_connection(*args, **kwargs)
-    except Exception:
-        pytest.skip("smoke call not applicable in this environment")
+def test_show_user_fetches_row():
+    mock_cursor = MagicMock()
+    mock_cursor.fetchone.return_value = ("alice",)
+    mock_conn = MagicMock()
+    mock_conn.cursor.return_value = mock_cursor
+    with patch("vulnerable.get_connection", return_value=mock_conn):
+        assert show_user("alice") == ("alice",)
+
+
+def test_select_uses_parameter_binding():
+    mock_cursor = MagicMock()
+    mock_conn = MagicMock()
+    mock_conn.cursor.return_value = mock_cursor
+    with patch("vulnerable.get_connection", return_value=mock_conn):
+        show_user("bob")
+        assert len(mock_cursor.execute.call_args[0]) >= 2

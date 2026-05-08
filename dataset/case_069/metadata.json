@@ -1,0 +1,7 @@
+{
+  "case_id": "case_069",
+  "exported_case_id": "case_010_CVE-2021-42134_unicorn_view",
+  "cve_id": "CVE-2021-42134",
+  "bandit_rule": "B301",
+  "cross_function_note": "apply_pickled_attribute (sink) separated from convert_to_snake_case/get_locations_stub/cache_attribute_stub."
+}

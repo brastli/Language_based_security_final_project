@@ -9,5 +9,7 @@ def code_execution():
     Then, call the setname function with the decoded first_name as argument.
     '''
     if request.method == 'POST':
-        first_name = base64.decodebytes(request.args.get('first_name', ''))
+        raw = request.args.get("first_name", "") or ""
+        decoded = base64.b64decode(raw.encode("ascii"))
+        first_name = decoded.decode("utf-8", errors="replace")
         exec("setname('%s')" % first_name)

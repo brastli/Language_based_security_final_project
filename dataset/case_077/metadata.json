@@ -1,0 +1,9 @@
+{
+  "case_id": "case_077_incident_policy_hub",
+  "source": "synthetic_enterprise_benchmark",
+  "difficulty": "extreme",
+  "cve_id": null,
+  "cwe_id": "CWE-94;CWE-22",
+  "description": "Synthetic SOC automation hub: dynamic alert predicates (eval chain) + attachment resolver with weak path normalization.",
+  "notes": ">500 LOC, 2 vulnerability classes, multi-hop call chains. Security tests fail on baseline until hardened."
+}

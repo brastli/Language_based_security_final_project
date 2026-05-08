@@ -1,0 +1,26 @@
+{
+  "case_id": "case_075_CVE-2022-31137_options",
+  "source": "CVEfixes",
+  "difficulty": "hard",
+  "cve_id": "CVE-2022-31137",
+  "cwe_id": "CWE-78",
+  "repo_name": "visit repo url",
+  "repo_url": "https://github.com/hap-wi/roxy-wi",
+  "filename": "options.py",
+  "old_path": "app/options.py",
+  "new_path": "app/options.py",
+  "nloc": 3762,
+  "complexity": "21.0",
+  "token_count": "30461.0",
+  "bandit_issue_count": 42,
+  "bandit_rules": [
+    "B108",
+    "B113",
+    "B605",
+    "B608",
+    "B701"
+  ],
+  "bandit_issues": "By default, jinja2 sets autoescape to False. Consider using autoescape=True or use the select_autoescape function to mitigate XSS vulnerabilities.; Call to requests without timeout; Possible SQL injection vector through string-based query construction.; Probable insecure usage of temp file/directory.; Starting a process with a shell, possible injection detected, security issue.",
+  "difficulty_score": 25,
+  "notes": "Automatically selected from CVEfixes + Bandit-detectable CSV. This is a non-simple candidate case. Manual pytest design is still required."
+}

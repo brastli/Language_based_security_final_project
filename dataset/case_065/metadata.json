@@ -1,0 +1,7 @@
+{
+  "case_id": "case_065",
+  "exported_case_id": "case_006_CVE-2021-32568_import_utils",
+  "cve_id": "CVE-2021-32568",
+  "bandit_rule": "B506",
+  "cross_function_note": "Same class: read_project_meta_from_yaml_text (sink) vs operat_md_media/temp_dir_name_stub (noise for slicing)."
+}

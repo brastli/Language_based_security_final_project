@@ -1,52 +1,24 @@
-# Auto-generated smoke test (SecurityEval import). Refine inputs if needed.
+import sys
+from pathlib import Path
+
+_ROOT = str(Path(__file__).resolve().parent)
+if _ROOT not in sys.path:
+    sys.path.insert(0, _ROOT)
+sys.modules.pop("vulnerable", None)
+
+"""MySQL 连接 — 返回连接对象 + 凭证须来自环境变量。"""
 
 import inspect
-import tempfile
-
-import pytest
+from unittest.mock import MagicMock, patch
 
 from vulnerable import getConnection
 
 
-def _dummy_value(param_name: str, param: inspect.Parameter):
-    if param.default is not inspect.Parameter.empty:
-        return None
-    n = param_name.lower()
-    if any(x in n for x in ("path", "file", "filename", "filepath", "dir", "directory")):
-        return tempfile.NamedTemporaryFile(prefix="se_", delete=False, suffix=".txt").name
-    if "port" in n:
-        return 49152
-    if any(x in n for x in ("host", "url", "uri", "endpoint", "address")):
-        return "http://127.0.0.1:9/"
-    if any(x in n for x in ("cmd", "command", "shell")):
-        return "true"
-    if any(x in n for x in ("data", "content", "body", "text", "input", "query", "payload", "name", "user")):
-        return "test"
-    if any(x in n for x in ("key", "secret", "password", "token")):
-        return "dummy"
-    if any(x in n for x in ("id", "num", "count", "size", "age", "year", "index", "limit", "offset")):
-        return 1
-    return "test"
+def test_returns_connection_object():
+    with patch("mysql.connector.connect", return_value=MagicMock()):
+        assert getConnection() is not None
 
 
-def test_smoke_call():
-    sig = inspect.signature(getConnection)
-    args: list = []
-    kwargs: dict = {}
-    for pname, p in sig.parameters.items():
-        if p.kind in (inspect.Parameter.VAR_POSITIONAL, inspect.Parameter.VAR_KEYWORD):
-            continue
-        if p.kind == inspect.Parameter.KEYWORD_ONLY:
-            v = _dummy_value(pname, p)
-            if v is None:
-                continue
-            kwargs[pname] = v
-            continue
-        v = _dummy_value(pname, p)
-        if v is None:
-            continue
-        args.append(v)
-    try:
-        getConnection(*args, **kwargs)
-    except Exception:
-        pytest.skip("smoke call not applicable in this environment")
+def test_must_read_credentials_from_environment():
+    src = inspect.getsource(getConnection)
+    assert "os.environ" in src or "getenv" in src

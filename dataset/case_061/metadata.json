@@ -1,0 +1,9 @@
+{
+  "case_id": "case_061_command_injection",
+  "vulnerability_type": "Command Injection",
+  "description": "Command injection via os.system with string concatenation in async_run function from Bcfg2 Trigger plugin.",
+  "sink": "os.system(\" \".join([prog] + args))",
+  "bandit_rules": ["B605:start_process_with_a_shell"],
+  "upstream_reference": "Bcfg2 Server Plugin Trigger async_run",
+  "minimal_reproduction": true
+}

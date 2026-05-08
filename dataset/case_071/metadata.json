@@ -1,0 +1,7 @@
+{
+  "case_id": "case_071",
+  "exported_case_id": "case_012_CVE-2022-31507_routes",
+  "cve_id": "CVE-2022-31507",
+  "bandit_rule": "B602",
+  "cross_function_note": "launch_webgui_with_args sink vs gui_health_stub/parse_job_list_stub."
+}

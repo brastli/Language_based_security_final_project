@@ -1,0 +1,7 @@
+{
+  "case_id": "case_066",
+  "exported_case_id": "case_007_CVE-2021-41127_model",
+  "cve_id": "CVE-2021-41127",
+  "bandit_rule": "B202",
+  "cross_function_note": "unpack_model (sink) vs get_latest_model_dummy/fingerprint_stub decoys."
+}

@@ -34,7 +34,7 @@ def get_base_strategy(cwe_id):
 def request_repair(cwe_id, function_code, current_strategy=None, data_flow_fact="", previous_error=None):
     """
     Send a contextual, guardrail-aware repair request to the LLM.
-    Now supports the "Strategy Evolution Loop".
+    Now supports the "Strategy Evolution Loop" and "Anti-Degenerate Patching".
     """
 
     # 1. Decide which strategy to use (DB provided vs. Local Fallback)
@@ -47,14 +47,16 @@ def request_repair(cwe_id, function_code, current_strategy=None, data_flow_fact=
     [CURRENT REPAIR STRATEGY FOR CWE-{cwe_id}]:
     {active_strategy}
 
-    STRICT RULES:
-    1. You MUST strictly adhere to the [CURRENT REPAIR STRATEGY] above.
-    2. DO NOT change the function name or parameter list signatures.
-    3. Retain existing business logic while neutralizing the threat.
-    4. 🛑 CRITICAL SYNTAX UPGRADE: This code might be written in Python 2 (e.g., `print "hi"`, `except Exception, e:`). You MUST automatically upgrade any legacy syntax to modern Python 3 so it can execute without SyntaxErrors. Add any obviously missing imports.
-
     [DATA-FLOW FACTS]:
     {data_flow_fact if data_flow_fact else "No specific data flow facts provided."}
+
+    [CRITICAL CONSTRAINTS - YOU MUST OBEY (ANTI-DEGENERATE PATCHING)]:
+    1. DO NOT DELETE THE CORE BUSINESS LOGIC! 
+       - If the code executes a system command, queries a database, or deserializes data, you MUST preserve that action using SECURE alternatives (e.g., `subprocess.run` with `shell=False`, parameterized SQL `execute(sql, params)`, or safe `json.loads`).
+       - NEVER use `pass`, `return None`, or empty strings just to bypass the scanner.
+    2. RETURN THE ENTIRE REWRITTEN FUNCTION: You must output the fully rewritten function from `def ...` to the end. Do not output partial snippets or use comments like "# rest of the code here".
+    3. PRESERVE SIGNATURES: The function name, parameters, and return types MUST remain exactly the same so upper-level API calls don't crash.
+    4. 🛑 CRITICAL SYNTAX UPGRADE: This code might be written in Python 2 (e.g., `print "hi"`, `except Exception, e:`). You MUST automatically upgrade any legacy syntax to modern Python 3 so it can execute without SyntaxErrors. Add any obviously missing standard imports.
 
     Original Code:
     {function_code}
@@ -71,7 +73,7 @@ def request_repair(cwe_id, function_code, current_strategy=None, data_flow_fact=
 
         CRITICAL EVOLUTION INSTRUCTIONS FOR THIS RETRY:
         1. DO NOT repeat the exact same code you just generated.
-        2. If the error is an 'AssertionError' or 'TypeError' from a Functional Test, your patch broke the business logic. You MUST relax your filtering. Maintain the expected return types and structural data flow.
+        2. If the error is an 'AssertionError' or 'TypeError' from a Functional Test, YOUR PATCH BROKE THE BUSINESS LOGIC. You MUST restore the deleted/altered logic while keeping it secure. Maintain the expected return types and structural data flow.
         3. If the error is an OS/Environment Error (like WinError 2), your strategy conflicts with the sandbox environment. Refine the strategy to be environment-aware.
         4. Analyze WHY the previous strategy failed. You MUST EVOLVE and refine the [CURRENT REPAIR STRATEGY] to handle this edge case so we learn from this mistake.
         5. Output the new, refined strategy description, and then the updated robust patch.
@@ -83,7 +85,6 @@ def request_repair(cwe_id, function_code, current_strategy=None, data_flow_fact=
 
     # Force JSON-shaped output for reliable parsing downstream.
     prompt += '\nOutput ONLY a valid JSON object with exactly three keys: "reasoning" (A brief explanation of your code edit), "strategy" (The evolved/refined repair strategy text to be saved in the database for future use), and "fixed_code" (The fixed Python code).'
-
     # ---------- LLM call ----------
     try:
         response = client.chat.completions.create(

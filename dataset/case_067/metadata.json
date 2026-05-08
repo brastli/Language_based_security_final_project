@@ -1,0 +1,7 @@
+{
+  "case_id": "case_067",
+  "exported_case_id": "case_008_CVE-2021-41127_persistor",
+  "cve_id": "CVE-2021-41127",
+  "bandit_rule": "B202",
+  "cross_function_note": "Module-level get_persistor_dummy vs class Persistor._decompress sink."
+}

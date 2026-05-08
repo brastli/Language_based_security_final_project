@@ -1,0 +1,9 @@
+{
+  "case_id": "case_063",
+  "exported_case_id": "case_004_CVE-2020-7698_views",
+  "cve_id": "CVE-2020-7698",
+  "cwe": "CWE-78",
+  "bandit_rule": "B602",
+  "vulnerability_type": "OS shell injection via subprocess shell=True",
+  "cross_function_note": "project_configure_generate / project_clone / project_parse_run share _run_cli_through_shell; decoy helpers kept for slicer context tests."
+}

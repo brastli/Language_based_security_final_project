@@ -1,0 +1,7 @@
+{
+  "case_id": "case_073",
+  "exported_case_id": "case_014_CVE-2024-22204_routes",
+  "cve_id": "CVE-2024-22204",
+  "bandit_rule": "B301",
+  "cross_function_note": "load_session_blob sink vs index_banner_stub/save_session_dummy/config_route_stub."
+}

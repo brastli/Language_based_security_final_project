@@ -8,6 +8,6 @@ def write_results(results):
         and return its path.
     '''
     filename = tempfile.mktemp()
-    tmp_file = open(filename, "w+")
+    tmp_file = open(filename, "wb+")
     tmp_file.write(results.encode("utf-8"))
     return tmp_file

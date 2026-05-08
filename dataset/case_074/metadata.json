@@ -1,0 +1,11 @@
+{
+  "case_id": "case_074",
+  "cwe": "CWE-94",
+  "bandit_rule": "B506",
+  "source": "exported_cve_cases",
+  "exported_case_id": "case_003_CVE-2017-2809_api",
+  "cve_id": "CVE-2017-2809",
+  "vulnerability_type": "Unsafe YAML load",
+  "description": "yaml.load on decrypted vault stream (ansible-vault api.py); reference fix yaml.safe_load.",
+  "dependencies_note": "Requires PyYAML (pip install pyyaml)."
+}

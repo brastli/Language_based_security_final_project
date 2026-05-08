@@ -1,0 +1,9 @@
+{
+  "case_id": "case_078_connector_relay_gateway",
+  "source": "synthetic_enterprise_benchmark",
+  "difficulty": "extreme",
+  "cve_id": null,
+  "cwe_id": "CWE-918;CWE-78",
+  "description": "Synthetic integration gateway: HTTP relay fetch with weak URL policy (SSRF) + log archival shell composer (command injection).",
+  "notes": ">500 LOC, two sinks, multi-hop chains. Security tests fail on baseline until hardened."
+}

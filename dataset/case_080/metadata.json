@@ -1,0 +1,9 @@
+{
+  "case_id": "case_080_policy_token_marshal_hub",
+  "source": "synthetic_enterprise_benchmark",
+  "difficulty": "extreme",
+  "cve_id": null,
+  "cwe_id": "CWE-502;CWE-78",
+  "description": "Synthetic policy bridge: marshal bytecode tokens plus compiler wrapper shelling out to clang-format-like tooling.",
+  "notes": ">500 LOC; marshal.loads vs pickle API; second sink shell=True; baseline tests red."
+}
